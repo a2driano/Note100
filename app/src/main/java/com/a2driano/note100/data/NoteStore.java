@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import com.a2driano.note100.model.NoteModel;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,9 +37,18 @@ public class NoteStore {
     }
 
     public List<NoteModel> getNotes() {
-        
-
-        return null;
+        List<NoteModel> notes = new ArrayList<>();
+        NoteCursorWrapper cursor = queryNotes(null, null);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                notes.add(cursor.getNote());
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+        return notes;
     }
 
     public void addNote(NoteModel noteModel) {
@@ -49,8 +57,20 @@ public class NoteStore {
     }
 
     public NoteModel getNote(UUID id) {
+        NoteCursorWrapper cursor = queryNotes(
+                NoteTable.Cols.UUID + " = ?",
+                new String[]{id.toString()}
+        );
 
-        return null;
+        try {
+            if (cursor.getCount() == 0) {
+                return null;
+            }
+            cursor.moveToFirst();
+            return cursor.getNote();
+        } finally {
+            cursor.close();
+        }
     }
 
     public void updateNote(NoteModel noteModel) {
