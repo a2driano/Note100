@@ -1,29 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:background="@drawable/shape_corner_file"
-                android:padding="8dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_margin="8dp"
+              android:background="@drawable/shape_corner_file"
+              android:orientation="horizontal"
+              android:padding="8dp">
 
     <TextView
         android:id="@+id/text_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:padding="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:scrollHorizontally="true"
         android:text="TextView"
-        tools:text="TITLE"/>
+        android:textSize="18sp"
+        tools:text="TITLE"
+        android:layout_weight="30"/>
 
     <TextView
         android:id="@+id/text_date"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:padding="4dp"
-        android:text="TextView"/>
+        android:text="TextView"
+        android:layout_weight="70"
+        />
 
 
     <TextView
@@ -32,4 +35,4 @@
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
-</RelativeLayout>
+</LinearLayout>

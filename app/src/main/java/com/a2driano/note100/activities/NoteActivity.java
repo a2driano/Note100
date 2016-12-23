@@ -76,7 +76,6 @@ public class NoteActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         mNoteStore = NoteStore.get(this);
-//        if (mTextNote.getText().length() != 0) {
         if (isNew && (mTextNote.getText().length() != 0)) {
             //if note is new and user create text
             mNoteModel.setText(mTextNote.getText().toString());
@@ -88,7 +87,6 @@ public class NoteActivity extends AppCompatActivity {
             mNoteModel.setText(mTextNote.getText().toString());
             mNoteModel.setColor(mCheckColor);
             mNoteStore.updateNote(mNoteModel);
-            System.out.println("UPDATE FORK");
         }
     }
 
