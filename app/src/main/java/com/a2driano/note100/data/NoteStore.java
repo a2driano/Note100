@@ -14,7 +14,7 @@ import java.util.UUID;
 import static com.a2driano.note100.data.NoteDbSchema.*;
 
 /**
- * Created by Andrii Papay on 20.12.2016.
+ * Created by Andrii Papai on 20.12.2016.
  */
 
 public class NoteStore {
@@ -37,18 +37,18 @@ public class NoteStore {
     }
 
     public List<NoteModel> getNotes() {
-        List<NoteModel> notes = new ArrayList<>();
+        mNoteModelList = new ArrayList<>();
         NoteCursorWrapper cursor = queryNotes(null, null);
         try {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
-                notes.add(cursor.getNote());
+                mNoteModelList.add(cursor.getNote());
                 cursor.moveToNext();
             }
         } finally {
             cursor.close();
         }
-        return notes;
+        return mNoteModelList;
     }
 
     public void addNote(NoteModel noteModel) {

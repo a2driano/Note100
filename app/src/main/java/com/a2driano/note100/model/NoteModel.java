@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * Created by Andrii Papay on 20.12.2016.
+ * Created by Andrii Papai on 20.12.2016.
  */
 
 public class NoteModel {
@@ -19,11 +19,15 @@ public class NoteModel {
 
     public NoteModel(UUID id) {
         mId = id;
-        mDate = new Date();
+//        mDate = new Date();
     }
 
     public UUID getId() {
         return mId;
+    }
+
+    public void setId(UUID id) {
+        mId = id;
     }
 
     public String getText() {

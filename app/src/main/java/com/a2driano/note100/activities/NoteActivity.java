@@ -15,12 +15,22 @@ import android.widget.TextView;
 
 import com.a2driano.note100.R;
 import com.a2driano.note100.data.NoteStore;
+import com.a2driano.note100.model.NoteColor;
 import com.a2driano.note100.model.NoteModel;
 
+import java.util.Date;
+import java.util.UUID;
+
+import static com.a2driano.note100.util.UtilNote.getReadableModifiedDateForNoteActivity;
+
 public class NoteActivity extends AppCompatActivity {
-    private TextView mDateText;
-    private EditText mTextNote;
     private NoteModel mNoteModel;
+    private EditText mTextNote;
+    private TextView mDateText;
+
+    private NoteStore mNoteStore;
+    private boolean isNew = false;
+    private String mCheckColor;
 
     private Toolbar mToolbar;
 
@@ -37,20 +47,49 @@ public class NoteActivity extends AppCompatActivity {
         mTextNote = (EditText) findViewById(R.id.noteText);
 
         //Take data in intent
-        Intent intent = getIntent();
-        mTextNote.setText(intent.getStringExtra("TEXT"));
-        mDateText.setText(intent.getStringExtra("DATE"));
-        mTextNote.setSelection(mTextNote.getText().length());
+        createNoteView();
     }
 
+    private void createNoteView() {
+        Intent intent = getIntent();
+        if (intent.getStringExtra("UUID") == null) {
+            mNoteModel = new NoteModel();
+            mNoteModel.setDate(new Date());
+            mNoteModel.setColor(new NoteColor().getYELLOW());
+
+            mDateText.setText(getReadableModifiedDateForNoteActivity(mNoteModel.getDate()));
+            isNew = true;
+        } else {
+            mNoteModel = NoteStore.get(this)
+                    .getNote(UUID.fromString(intent.getStringExtra("UUID")));
+            //add info to view
+            mDateText.setText(getReadableModifiedDateForNoteActivity(mNoteModel.getDate()));
+            mTextNote.setText(mNoteModel.getText());
+            mTextNote.setSelection(mTextNote.getText().length());
+
+            mCheckColor = mNoteModel.getColor();
+        }
+    }
 
     //When we return to NoteListActivity, instance of NoteModel update in to DB
     @Override
     protected void onPause() {
         super.onPause();
-        //if mNoteModel is created earlier
-        if (mNoteModel != null)
-            NoteStore.get(this).updateNote(mNoteModel);
+        mNoteStore = NoteStore.get(this);
+//        if (mTextNote.getText().length() != 0) {
+        if (isNew && (mTextNote.getText().length() != 0)) {
+            //if note is new and user create text
+            mNoteModel.setText(mTextNote.getText().toString());
+            mNoteStore.addNote(mNoteModel);
+        } else if (!isNew
+                && (!mNoteModel.getText().equals(mTextNote.getText().toString())
+                || !mCheckColor.equals(mNoteModel.getColor().toString()))) {
+            //if note is exist
+            mNoteModel.setText(mTextNote.getText().toString());
+            mNoteModel.setColor(mCheckColor);
+            mNoteStore.updateNote(mNoteModel);
+            System.out.println("UPDATE FORK");
+        }
     }
 
     //Class for draw line in text field

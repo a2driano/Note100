@@ -1,6 +1,7 @@
 package com.a2driano.note100.activities;
 
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -32,6 +33,17 @@ public class NoteListActivity extends AppCompatActivity {
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         mNoteRecyclerView = (RecyclerView) findViewById(R.id.recycle_view);
         mNoteRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -51,8 +63,8 @@ public class NoteListActivity extends AppCompatActivity {
     private class NoteHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mNoteTitle;
         private TextView mNoteDate;
+        private TextView mNoteUuid;
 
-        private String mNoteColorBackground;
         private NoteModel mNoteModel;
 
         public NoteHolder(View itemView) {
@@ -60,20 +72,21 @@ public class NoteListActivity extends AppCompatActivity {
 
             mNoteTitle = (TextView) itemView.findViewById(R.id.text_title);
             mNoteDate = (TextView) itemView.findViewById(R.id.text_date);
+            mNoteUuid = (TextView) itemView.findViewById(R.id.uuid);
             itemView.setOnClickListener(this);
         }
 
         public void bindNote(NoteModel noteModel) {
             mNoteModel = noteModel;
             mNoteTitle.setText(mNoteModel.getText());
+            mNoteUuid.setText(noteModel.getId().toString());
             mNoteDate.setText(getReadableModifiedDate(mNoteModel.getDate()));
         }
 
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
-            intent.putExtra("TEXT", mNoteTitle.getText());
-            intent.putExtra("DATE", mNoteDate.getText());
+            intent.putExtra("UUID", mNoteUuid.getText());
             startActivity(intent);
         }
     }

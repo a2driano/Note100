@@ -11,7 +11,7 @@ import java.util.UUID;
 import static com.a2driano.note100.data.NoteDbSchema.*;
 
 /**
- * Created by Andrii Papay on 21.12.2016.
+ * Created by Andrii Papai on 21.12.2016.
  */
 
 public class NoteCursorWrapper extends CursorWrapper {
@@ -27,7 +27,7 @@ public class NoteCursorWrapper extends CursorWrapper {
     public NoteModel getNote() {
         String uuidString = getString(getColumnIndex(NoteTable.Cols.UUID));
         String text = getString(getColumnIndex(NoteTable.Cols.TEXT));
-        long date = getLong(getColumnIndex(NoteTable.Cols.DATE));
+        String date = getString(getColumnIndex(NoteTable.Cols.DATE));
         String color = getString(getColumnIndex(NoteTable.Cols.COLOR));
 
         NoteModel noteModel = new NoteModel(UUID.fromString(uuidString));
