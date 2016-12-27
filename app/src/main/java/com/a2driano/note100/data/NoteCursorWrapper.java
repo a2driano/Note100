@@ -5,7 +5,11 @@ import android.database.CursorWrapper;
 
 import com.a2driano.note100.model.NoteModel;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.UUID;
 
 import static com.a2driano.note100.data.NoteDbSchema.*;
@@ -31,10 +35,22 @@ public class NoteCursorWrapper extends CursorWrapper {
         String color = getString(getColumnIndex(NoteTable.Cols.COLOR));
 
         NoteModel noteModel = new NoteModel(UUID.fromString(uuidString));
+
         noteModel.setText(text);
-        noteModel.setDate(new Date(date));
+        noteModel.setDate(dateChange(date));
         noteModel.setColor(color);
 
         return noteModel;
+    }
+
+    private Date dateChange(String date){
+        Date dateNote = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("EEE MMM d HH:mm:ss zzz yyyy", Locale.ENGLISH);
+        try {
+            dateNote = format.parse(date.trim());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return dateNote;
     }
 }

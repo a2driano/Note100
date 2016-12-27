@@ -46,7 +46,7 @@ public class NoteActivity extends AppCompatActivity {
         mDateText = (TextView) findViewById(R.id.text_date_note_activity);
         mTextNote = (EditText) findViewById(R.id.noteText);
 
-        //Take data in intent
+        //Get data from intent
         createNoteView();
     }
 
@@ -71,7 +71,7 @@ public class NoteActivity extends AppCompatActivity {
         }
     }
 
-    //When we return to NoteListActivity, instance of NoteModel update in to DB
+    //When we return to NoteListActivity, instance of NoteModel add or update in to DB
     @Override
     protected void onPause() {
         super.onPause();

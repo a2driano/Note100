@@ -49,16 +49,35 @@ public class NoteListActivity extends AppCompatActivity {
         mNoteRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mNoteRecyclerView.setHasFixedSize(true);
 
+//        updateUI();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         updateUI();
     }
 
     private void updateUI() {
         NoteStore noteStore = NoteStore.get(NoteListActivity.this);
         List<NoteModel> notes = noteStore.getNotes();
-        mNoteAdapter = new NoteAdapter(notes);
-        mNoteRecyclerView.setAdapter(mNoteAdapter);
+
+        if (mNoteAdapter == null) {
+            mNoteAdapter = new NoteAdapter(notes);
+            mNoteRecyclerView.setAdapter(mNoteAdapter);
+        } else {
+            mNoteAdapter.setNotes(notes);
+            mNoteAdapter.notifyDataSetChanged();
+        }
     }
 
+
+    //    private void updateUI() {
+//        NoteStore noteStore = NoteStore.get(NoteListActivity.this);
+//        List<NoteModel> notes = noteStore.getNotes();
+//        mNoteAdapter = new NoteAdapter(notes);
+//        mNoteRecyclerView.setAdapter(mNoteAdapter);
+//    }
 
     private class NoteHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mNoteTitle;
@@ -114,6 +133,10 @@ public class NoteListActivity extends AppCompatActivity {
         @Override
         public int getItemCount() {
             return mNoteModelList.size();
+        }
+
+        public void setNotes(List<NoteModel> notes) {
+            mNoteModelList = notes;
         }
     }
 }

@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Created by Andrii Papay on 21.12.2016.
+ * Created by Andrii Papai on 21.12.2016.
  */
 
 public class UtilNote {
@@ -18,7 +18,7 @@ public class UtilNote {
 
     //Modifier Date for date and time vision
     public static String getReadableModifiedDateForNoteActivity(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy hh:mm", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault());
         String displayDate = sdf.format(date);
         return displayDate;
     }

@@ -32,7 +32,7 @@
         android:background="@color/colorBackgroundYellow"
         android:padding="8dp"
         android:textAlignment="center"
-        android:textSize="16sp"
+        android:textSize="22sp"
         tools:text="DATE"
         android:layout_below="@+id/toolbar"
         android:layout_alignParentLeft="true"

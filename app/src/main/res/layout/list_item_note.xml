@@ -6,26 +6,28 @@
               android:layout_margin="8dp"
               android:background="@drawable/shape_corner_file"
               android:orientation="horizontal"
-              android:padding="8dp">
+              android:padding="12dp">
 
     <TextView
         android:id="@+id/text_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="30"
         android:ellipsize="end"
         android:maxLines="1"
         android:scrollHorizontally="true"
         android:text="TextView"
-        android:textSize="18sp"
-        tools:text="TITLE"
-        android:layout_weight="30"/>
+        android:textSize="24sp"
+        tools:text="TITLE"/>
 
     <TextView
         android:id="@+id/text_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="TextView"
+        android:layout_gravity="center_vertical"
         android:layout_weight="70"
+        android:gravity="right"
+        android:text="TextView"
         />
 
 

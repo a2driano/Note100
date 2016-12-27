@@ -6,7 +6,7 @@
                 android:radius="8dp">
             </corners>
             <solid
-                android:color="@color/defaultColor">
+                android:color="@color/color_YELLOW">
             </solid>
         </shape>
     </item>

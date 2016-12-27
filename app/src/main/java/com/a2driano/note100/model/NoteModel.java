@@ -19,7 +19,7 @@ public class NoteModel {
 
     public NoteModel(UUID id) {
         mId = id;
-//        mDate = new Date();
+        mDate = new Date();
     }
 
     public UUID getId() {
