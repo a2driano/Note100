@@ -1,6 +1,7 @@
 package com.a2driano.note100.activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import com.a2driano.note100.R;
 import com.a2driano.note100.data.NoteStore;
 import com.a2driano.note100.model.NoteModel;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -56,7 +58,6 @@ public class NoteListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
 
         mNoteRecyclerView = (RecyclerView) findViewById(R.id.recycle_view);
         mNoteRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -168,11 +169,9 @@ public class NoteListActivity extends AppCompatActivity {
             mNoteUuid = (TextView) itemView.findViewById(R.id.uuid);
             mNoteColor = (TextView) itemView.findViewById(R.id.color);
             mLinearLayout = (LinearLayout) findViewById(R.id.note_layout);
-//            mLinearLayout.setBackgroundResource(R.color.GREEN);
             itemView.setOnClickListener(this);
             itemView.setOnCreateContextMenuListener(this);
             itemView.setLongClickable(true);
-//            mNoteAdapter.mNoteHolderList.add(this);
         }
 
 
@@ -182,6 +181,7 @@ public class NoteListActivity extends AppCompatActivity {
             mNoteUuid.setText(mNoteModel.getId().toString());
             mNoteColor.setText(mNoteModel.getColor());
             mNoteDate.setText(getReadableModifiedDate(mNoteModel.getDate()));
+        }
 
         @Override
         public void onClick(View v) {
@@ -244,9 +244,10 @@ public class NoteListActivity extends AppCompatActivity {
             });
             NoteModel noteModel = mNoteModelList.get(position);
             holder.bindNote(noteModel);
-
-//            holder.mLinearLayout.setBackgroundResource(R.color.GREEN);
-
+            /** Change color */
+            String color = noteModel.getColor().toUpperCase();
+            int colorLayout = getResources().getIdentifier(color, "color", getPackageName());
+            holder.itemView.setBackgroundResource(colorLayout);
             addItem(holder);
         }
 
