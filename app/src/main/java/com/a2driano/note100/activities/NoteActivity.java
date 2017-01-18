@@ -21,6 +21,7 @@ import com.a2driano.note100.model.NoteModel;
 import java.util.Date;
 import java.util.UUID;
 
+import static com.a2driano.note100.activities.NoteListActivity.EXTRA_MESSAGE_UUID;
 import static com.a2driano.note100.util.UtilNote.getReadableModifiedDateForNoteActivity;
 
 public class NoteActivity extends AppCompatActivity {
@@ -46,13 +47,14 @@ public class NoteActivity extends AppCompatActivity {
         mDateText = (TextView) findViewById(R.id.text_date_note_activity);
         mTextNote = (EditText) findViewById(R.id.noteText);
 
+
         //Get data from intent
         createNoteView();
     }
 
     private void createNoteView() {
-        Intent intent = getIntent();
-        if (intent.getStringExtra("UUID") == null) {
+        Intent intent = this.getIntent();
+        if (intent.getStringExtra(EXTRA_MESSAGE_UUID) == null) {
             mNoteModel = new NoteModel();
             mNoteModel.setDate(new Date());
             mNoteModel.setColor(new NoteColor().getYELLOW());
@@ -61,7 +63,7 @@ public class NoteActivity extends AppCompatActivity {
             isNew = true;
         } else {
             mNoteModel = NoteStore.get(this)
-                    .getNote(UUID.fromString(intent.getStringExtra("UUID")));
+                    .getNote(UUID.fromString(intent.getStringExtra(EXTRA_MESSAGE_UUID)));
             //add info to view
             mDateText.setText(getReadableModifiedDateForNoteActivity(mNoteModel.getDate()));
             mTextNote.setText(mNoteModel.getText());

@@ -16,9 +16,9 @@
     <color name="divider">#B6B6B6</color>
 
     <!--Color for note widget-->
-    <color name="color_YELLOW">#ffeea8</color>
-    <color name="color_RED">#ffb1b1</color>
-    <color name="color_GREEN">#bbffa9</color>
-    <color name="color_BLUE">#8ff4ff</color>
-    <color name="color_GREY">#c4c4c4</color>
+    <color name="YELLOW">#ffeea8</color>
+    <color name="RED">#ffb1b1</color>
+    <color name="GREEN">#bbffa9</color>
+    <color name="BLUE">#8ff4ff</color>
+    <color name="GREY">#c4c4c4</color>
 </resources>

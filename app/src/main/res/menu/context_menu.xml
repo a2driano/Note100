@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/context_menu_color"
+        android:showAsAction="ifRoom"
+        android:title="@string/context_menu_change_color">
+        <menu>
+            <item
+                android:id="@+id/color_YELLOW"
+                android:icon="@color/YELLOW"
+                android:title="@string/context_menu_color_yellow"/>
+            <item
+                android:id="@+id/color_RED"
+                android:icon="@color/RED"
+                android:title="@string/context_menu_color_red"/>
+            <item
+                android:id="@+id/color_GREEN"
+                android:icon="@color/GREEN"
+                android:title="@string/context_menu_color_green"/>
+            <item
+                android:id="@+id/color_BLUE"
+                android:icon="@color/BLUE"
+                android:title="@string/context_menu_color_blue"/>
+            <item
+                android:id="@+id/color_GREY"
+                android:icon="@color/GREY"
+                android:title="@string/context_menu_color_grey"/>
+        </menu>
+    </item>
+    <item
+        android:id="@+id/context_menu_delete"
+        android:title="@string/context_menu_delete"/>
+</menu>

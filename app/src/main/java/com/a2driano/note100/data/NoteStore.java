@@ -81,6 +81,14 @@ public class NoteStore {
                 new String[]{uuidString});
     }
 
+    public void deleteNote(NoteModel noteModel) {
+        String uuidString = noteModel.getId().toString();
+        ContentValues values = getContentValues(noteModel);
+        mDatabase.delete(NoteTable.NAME,
+                NoteTable.Cols.UUID + " = ? ",
+                new String[]{uuidString});
+    }
+
     private static ContentValues getContentValues(NoteModel noteModel) {
         ContentValues values = new ContentValues();
         values.put(NoteTable.Cols.UUID, noteModel.getId().toString());

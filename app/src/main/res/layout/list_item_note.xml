@@ -4,7 +4,8 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:layout_margin="8dp"
-              android:background="@drawable/shape_corner_file"
+              android:id="@+id/note_layout"
+              android:background="@color/YELLOW"
               android:orientation="horizontal"
               android:padding="12dp">
 
@@ -30,11 +31,25 @@
         android:text="TextView"
         />
 
-
     <TextView
         android:id="@+id/uuid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
+    <TextView
+        android:id="@+id/color"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
 </LinearLayout>
+<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+              <!--xmlns:tools="http://schemas.android.com/tools"-->
+              <!--android:layout_width="match_parent"-->
+              <!--android:layout_height="wrap_content"-->
+              <!--android:layout_margin="8dp"-->
+              <!--android:id="@+id/note_layout"-->
+              <!--android:background="@drawable/shape_corner_file"-->
+              <!--android:orientation="horizontal"-->
+              <!--android:padding="12dp"/>-->

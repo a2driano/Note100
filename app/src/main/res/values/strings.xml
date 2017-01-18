@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">NOTE100</string>
+
+    <string name="context_menu_change_color">Change color</string>
+    <string name="context_menu_delete">Delete</string>
+
+    <string name="context_menu_color_yellow">YELLOW</string>
+    <string name="context_menu_color_red">RED</string>
+    <string name="context_menu_color_green">GREEN</string>
+    <string name="context_menu_color_blue">BLUE</string>
+    <string name="context_menu_color_grey">GREY</string>
 </resources>
