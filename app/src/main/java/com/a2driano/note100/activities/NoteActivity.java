@@ -73,7 +73,7 @@ public class NoteActivity extends AppCompatActivity {
         }
     }
 
-    //When we return to NoteListActivity, instance of NoteModel add or update in to DB
+    /**When we return to NoteListActivity, instance of NoteModel add or update in to DB */
     @Override
     protected void onPause() {
         super.onPause();
@@ -92,7 +92,7 @@ public class NoteActivity extends AppCompatActivity {
         }
     }
 
-    //Class for draw line in text field
+    /** Class for draw line in text field */
     public static class LineEditText extends EditText {
         private Rect mRect;
         private Paint mPaint;
