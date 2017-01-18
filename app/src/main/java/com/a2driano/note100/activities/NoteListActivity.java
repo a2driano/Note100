@@ -114,7 +114,7 @@ public class NoteListActivity extends AppCompatActivity {
 
         String color = "YELLOW";
         switch (item.getItemId()) {
-            /** Color change case`s  */
+            /** Color change case`s */
             case R.id.color_YELLOW:
                 holder.itemView.setBackgroundResource(R.color.YELLOW);
                 color = "YELLOW";
@@ -258,6 +258,7 @@ public class NoteListActivity extends AppCompatActivity {
 
         public void setNotes(List<NoteModel> notes) {
             mNoteModelList = notes;
+            mNoteHolderList = new ArrayList<>();
         }
     }
 }
