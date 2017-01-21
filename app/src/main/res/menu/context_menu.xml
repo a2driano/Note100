@@ -4,7 +4,7 @@
         android:id="@+id/context_menu_color"
         android:showAsAction="ifRoom"
         android:title="@string/context_menu_change_color">
-        <menu>
+        <menu >
             <item
                 android:id="@+id/color_YELLOW"
                 android:icon="@color/YELLOW"

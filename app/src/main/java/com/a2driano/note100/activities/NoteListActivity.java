@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -88,6 +89,30 @@ public class NoteListActivity extends AppCompatActivity {
         Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
         intent.putExtra(EXTRA_MESSAGE_UUID, UUID);
         startActivity(intent);
+    }
+
+    /** Create menu */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_sort_alphabet:
+                break;
+            case R.id.menu_sort_date:
+                break;
+            case R.id.menu_settings:
+                break;
+            case R.id.menu_delete:
+                break;
+            default:
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

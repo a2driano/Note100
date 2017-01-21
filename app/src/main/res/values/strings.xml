@@ -9,4 +9,10 @@
     <string name="context_menu_color_green">GREEN</string>
     <string name="context_menu_color_blue">BLUE</string>
     <string name="context_menu_color_grey">GREY</string>
+
+    <string name="menu_sorting">Sorting</string>
+    <string name="menu_setting">Settings</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_alphabetically">Sort from A to Z</string>
+    <string name="menu_by_date">Sort by Date</string>
 </resources>
