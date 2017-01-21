@@ -16,12 +16,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.a2driano.note100.R;
 import com.a2driano.note100.data.NoteStore;
 import com.a2driano.note100.model.NoteModel;
+import com.a2driano.note100.util.ContextMenuRecyclerView;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -39,7 +41,7 @@ public class NoteListActivity extends AppCompatActivity {
 
     private Toolbar mToolbar;
     private LinearLayout mLinearLayout;
-    private int mSelectedPosition;
+    //    private int mSelectedPosition;
     private List<NoteModel> notes;
     private NoteStore mNoteStore;
 
@@ -91,7 +93,9 @@ public class NoteListActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /** Create menu */
+    /**
+     * Create menu
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -121,16 +125,11 @@ public class NoteListActivity extends AppCompatActivity {
         /** Find viewHolder on click position */
         int position = -1;
         try {
-            position = (mNoteAdapter.getPosition());
+            position = mNoteAdapter.getPosition();
         } catch (Exception e) {
             return super.onContextItemSelected(item);
         }
-        NoteHolder holder = mNoteAdapter.mNoteHolderList.get(position);
-
-//        for (int i = 0; i < mNoteAdapter.mNoteHolderList.size(); i++) {
-//            System.out.println("---------mNoteHolderList --- position:" + i + " ---and---" + mNoteAdapter.mNoteHolderList.get(i));
-//
-//        }
+        NoteHolder holder = (NoteHolder) mNoteRecyclerView.findViewHolderForLayoutPosition(position);
 
         /** Get NoteStore instance and current NoteModel object */
         mNoteStore = NoteStore.get(NoteListActivity.this);
@@ -164,9 +163,7 @@ public class NoteListActivity extends AppCompatActivity {
             case R.id.context_menu_delete:
                 mNoteStore.deleteNote(noteModel);
                 mNoteAdapter.mNoteModelList.remove(position);
-                mNoteAdapter.mNoteHolderList.remove(position);
                 mNoteAdapter.notifyItemRemoved(position);
-                mNoteAdapter.notifyItemRangeChanged(position, mNoteAdapter.mNoteHolderList.size());
                 return super.onContextItemSelected(item);
         }
         /** Change color action */
@@ -224,12 +221,10 @@ public class NoteListActivity extends AppCompatActivity {
 
     private class NoteAdapter extends RecyclerView.Adapter<NoteHolder> {
         private List<NoteModel> mNoteModelList;
-        private List<NoteHolder> mNoteHolderList;
         private int position;
 
         public NoteAdapter(List<NoteModel> noteModelList) {
             mNoteModelList = noteModelList;
-            mNoteHolderList = new ArrayList<>();
         }
 
         public int getPosition() {
@@ -239,15 +234,6 @@ public class NoteListActivity extends AppCompatActivity {
         public void setPosition(int position) {
             this.position = position;
         }
-
-        public NoteHolder getItem(int position) {
-            return mNoteHolderList.get(position);
-        }
-
-        public void addItem(NoteHolder holder) {
-            mNoteHolderList.add(holder);
-        }
-
 
         @Override
         public NoteHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -273,7 +259,6 @@ public class NoteListActivity extends AppCompatActivity {
             String color = noteModel.getColor().toUpperCase();
             int colorLayout = getResources().getIdentifier(color, "color", getPackageName());
             holder.itemView.setBackgroundResource(colorLayout);
-            addItem(holder);
         }
 
         @Override
@@ -283,7 +268,6 @@ public class NoteListActivity extends AppCompatActivity {
 
         public void setNotes(List<NoteModel> notes) {
             mNoteModelList = notes;
-            mNoteHolderList = new ArrayList<>();
         }
     }
 }

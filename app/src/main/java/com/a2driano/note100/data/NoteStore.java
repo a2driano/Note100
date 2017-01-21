@@ -38,7 +38,7 @@ public class NoteStore {
 
     public List<NoteModel> getNotes() {
         mNoteModelList = new ArrayList<>();
-        NoteCursorWrapper cursor = queryNotes(null, null);
+        NoteCursorWrapper cursor = queryNotes(null, null, null, null);
         try {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
@@ -59,7 +59,8 @@ public class NoteStore {
     public NoteModel getNote(UUID id) {
         NoteCursorWrapper cursor = queryNotes(
                 NoteTable.Cols.UUID + " = ?",
-                new String[]{id.toString()}
+                new String[]{id.toString()},
+                null, null
         );
 
         try {
@@ -98,7 +99,8 @@ public class NoteStore {
         return values;
     }
 
-    private NoteCursorWrapper queryNotes(String whereClause, String[] whereArgs) {
+    /** keyword - ASC or DESC, reverse order switch */
+    private NoteCursorWrapper queryNotes(String whereClause, String[] whereArgs, String orderBy, String keyword) {
         Cursor cursor = mDatabase.query(
                 NoteTable.NAME,
                 null,
@@ -106,8 +108,22 @@ public class NoteStore {
                 whereArgs,
                 null,
                 null,
-                null
+                NoteTable.Cols.TEXT + " COLLATE NOCASE ASC;"
+//                NoteTable.Cols.TEXT + " COLLATE NOCASE DESC;"//reverse DESC
         );
         return new NoteCursorWrapper(cursor);
     }
+
+//    private NoteCursorWrapper queryNotes(String whereClause, String[] whereArgs) {
+//        Cursor cursor = mDatabase.query(
+//                NoteTable.NAME,
+//                null,
+//                whereClause,
+//                whereArgs,
+//                null,
+//                null,
+//                null
+//        );
+//        return new NoteCursorWrapper(cursor);
+//    }
 }
