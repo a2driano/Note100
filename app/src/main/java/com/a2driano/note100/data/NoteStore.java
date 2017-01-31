@@ -36,9 +36,9 @@ public class NoteStore {
         return sNoteStore;
     }
 
-    public List<NoteModel> getNotes() {
+    public List<NoteModel> getNotes(String sort, String reverse) {
         mNoteModelList = new ArrayList<>();
-        NoteCursorWrapper cursor = queryNotes(null, null, null, null);
+        NoteCursorWrapper cursor = queryNotes(null, null, sort, reverse);
         try {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
@@ -101,6 +101,12 @@ public class NoteStore {
 
     /** keyword - ASC or DESC, reverse order switch */
     private NoteCursorWrapper queryNotes(String whereClause, String[] whereArgs, String orderBy, String keyword) {
+        String orderByText;
+        if (orderBy != null & keyword != null)
+            orderByText = orderBy + " COLLATE NOCASE " + keyword + ";";
+        else
+            orderByText = null;
+
         Cursor cursor = mDatabase.query(
                 NoteTable.NAME,
                 null,
@@ -108,7 +114,9 @@ public class NoteStore {
                 whereArgs,
                 null,
                 null,
-                NoteTable.Cols.TEXT + " COLLATE NOCASE ASC;"
+                orderByText
+//                orderBy + " COLLATE NOCASE " + keyword + ";"
+//                NoteTable.Cols.DATE + " COLLATE NOCASE ASC;"
 //                NoteTable.Cols.TEXT + " COLLATE NOCASE DESC;"//reverse DESC
         );
         return new NoteCursorWrapper(cursor);

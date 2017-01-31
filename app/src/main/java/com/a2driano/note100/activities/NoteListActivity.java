@@ -1,14 +1,13 @@
 package com.a2driano.note100.activities;
 
 import android.content.Intent;
-import android.graphics.Color;
+import android.content.SharedPreferences;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,17 +15,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.a2driano.note100.R;
+import com.a2driano.note100.data.NoteDbSchema;
 import com.a2driano.note100.data.NoteStore;
 import com.a2driano.note100.model.NoteModel;
-import com.a2driano.note100.util.ContextMenuRecyclerView;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -40,16 +36,21 @@ public class NoteListActivity extends AppCompatActivity {
     private NoteAdapter mNoteAdapter;
 
     private Toolbar mToolbar;
-    private LinearLayout mLinearLayout;
-    //    private int mSelectedPosition;
     private List<NoteModel> notes;
     private NoteStore mNoteStore;
+
+    private String sortingVariable;
+    private String sortingReverse;
+    private boolean flagText = true;
+    private boolean flagReverse = true;
+    private SharedPreferences mPreferences;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
 
@@ -62,10 +63,27 @@ public class NoteListActivity extends AppCompatActivity {
             }
         });
 
+        loadSharedPreferences();
+
         mNoteRecyclerView = (RecyclerView) findViewById(R.id.recycle_view);
         mNoteRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mNoteRecyclerView.setHasFixedSize(true);
         registerForContextMenu(mNoteRecyclerView);
+    }
+
+    /** Save sort variables in Shared Preferences */
+    private void saveSharedPreferences(String sort, String reverse) {
+        mPreferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putString("SORT", sort);
+        editor.putString("REVERSE", reverse);
+        editor.commit();
+    }
+    /** Load sort variables in Shared Preferences */
+    private void loadSharedPreferences() {
+        mPreferences = getPreferences(MODE_PRIVATE);
+        sortingVariable = mPreferences.getString("SORT", NoteDbSchema.NoteTable.Cols.DATE);
+        sortingReverse = mPreferences.getString("REVERSE", "DESC");
     }
 
     @Override
@@ -76,7 +94,7 @@ public class NoteListActivity extends AppCompatActivity {
 
     private void updateUI() {
         mNoteStore = NoteStore.get(NoteListActivity.this);
-        List<NoteModel> notes = mNoteStore.getNotes();
+        List<NoteModel> notes = mNoteStore.getNotes(sortingVariable, sortingReverse);
 
         if (mNoteAdapter == null) {
             mNoteAdapter = new NoteAdapter(notes);
@@ -93,9 +111,7 @@ public class NoteListActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    /**
-     * Create menu
-     */
+    /** Create menu */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -106,15 +122,41 @@ public class NoteListActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            /** Sorting by text */
             case R.id.menu_sort_alphabet:
+                if (!sortingVariable.equals(NoteDbSchema.NoteTable.Cols.TEXT)) {
+                    sortingVariable = NoteDbSchema.NoteTable.Cols.TEXT;
+                    sortingReverse = "ASC";
+                    System.out.println("------ 1");
+                } else if (sortingReverse.equals("ASC")) {
+                    sortingReverse = "DESC";
+                    System.out.println("------ 2");
+                } else if (sortingReverse.equals("DESC")) {
+                    sortingReverse = "ASC";
+                    System.out.println("------ 3");
+                }
+                saveSharedPreferences(sortingVariable, sortingReverse);
+                updateUI();
                 break;
+            /** Sorting by date */
             case R.id.menu_sort_date:
+                if (!sortingVariable.equals(NoteDbSchema.NoteTable.Cols.DATE)) {
+                    sortingVariable = NoteDbSchema.NoteTable.Cols.DATE;
+                    sortingReverse = "ASC";
+                } else if (sortingReverse.equals("ASC")) {
+                    sortingReverse = "DESC";
+                } else if (sortingReverse.equals("DESC")) {
+                    sortingReverse = "ASC";
+                }
+                saveSharedPreferences(sortingVariable, sortingReverse);
+                updateUI();
                 break;
             case R.id.menu_settings:
                 break;
             case R.id.menu_delete:
                 break;
             default:
+                break;
         }
         return super.onOptionsItemSelected(item);
     }
