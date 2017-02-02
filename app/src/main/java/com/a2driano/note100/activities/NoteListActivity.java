@@ -23,6 +23,8 @@ import com.a2driano.note100.data.NoteDbSchema;
 import com.a2driano.note100.data.NoteStore;
 import com.a2driano.note100.model.NoteModel;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,17 +36,12 @@ public class NoteListActivity extends AppCompatActivity {
 
     private RecyclerView mNoteRecyclerView;
     private NoteAdapter mNoteAdapter;
-
     private Toolbar mToolbar;
     private List<NoteModel> notes;
     private NoteStore mNoteStore;
-
-    private String sortingVariable;
-    private String sortingReverse;
-    private boolean flagText = true;
-    private boolean flagReverse = true;
     private SharedPreferences mPreferences;
-
+    private String sortingVariable;
+    private boolean reverseVariable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,19 +68,24 @@ public class NoteListActivity extends AppCompatActivity {
         registerForContextMenu(mNoteRecyclerView);
     }
 
-    /** Save sort variables in Shared Preferences */
-    private void saveSharedPreferences(String sort, String reverse) {
+    /**
+     * Save sort variables in Shared Preferences
+     */
+    private void saveSharedPreferences(String sort, boolean reverse) {
         mPreferences = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putString("SORT", sort);
-        editor.putString("REVERSE", reverse);
+        editor.putBoolean("REVERSE", reverse);
         editor.commit();
     }
-    /** Load sort variables in Shared Preferences */
+
+    /**
+     * Load sort variables in Shared Preferences
+     */
     private void loadSharedPreferences() {
         mPreferences = getPreferences(MODE_PRIVATE);
         sortingVariable = mPreferences.getString("SORT", NoteDbSchema.NoteTable.Cols.DATE);
-        sortingReverse = mPreferences.getString("REVERSE", "DESC");
+        reverseVariable = mPreferences.getBoolean("REVERSE", false);
     }
 
     @Override
@@ -94,8 +96,9 @@ public class NoteListActivity extends AppCompatActivity {
 
     private void updateUI() {
         mNoteStore = NoteStore.get(NoteListActivity.this);
-        List<NoteModel> notes = mNoteStore.getNotes(sortingVariable, sortingReverse);
+        notes = mNoteStore.getNotes();
 
+        sortNoteList(sortingVariable, reverseVariable);
         if (mNoteAdapter == null) {
             mNoteAdapter = new NoteAdapter(notes);
             mNoteRecyclerView.setAdapter(mNoteAdapter);
@@ -105,13 +108,50 @@ public class NoteListActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * SORTING LIST
+     */
+    private void sortNoteList(String parameter, boolean reverse) {
+        if (parameter.equals(NoteDbSchema.NoteTable.Cols.TEXT)) {
+            Collections.sort(notes, new Comparator<NoteModel>() {
+                @Override
+                public int compare(NoteModel o1, NoteModel o2) {
+                    return o1.getText().compareTo(o2.getText());
+                }
+            });
+            if (!reverse)
+                Collections.sort(notes, new Comparator<NoteModel>() {
+                    @Override
+                    public int compare(NoteModel o1, NoteModel o2) {
+                        return o2.getText().compareTo(o1.getText());
+                    }
+                });
+        } else {
+            Collections.sort(notes, new Comparator<NoteModel>() {
+                @Override
+                public int compare(NoteModel o1, NoteModel o2) {
+                    return o1.getDate().compareTo(o2.getDate());
+                }
+            });
+            if (!reverse)
+                Collections.sort(notes, new Comparator<NoteModel>() {
+                    @Override
+                    public int compare(NoteModel o1, NoteModel o2) {
+                        return o2.getDate().compareTo(o1.getDate());
+                    }
+                });
+        }
+    }
+
     private void createIntentForNoteActivity(String UUID) {
         Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
         intent.putExtra(EXTRA_MESSAGE_UUID, UUID);
         startActivity(intent);
     }
 
-    /** Create menu */
+    /**
+     * Create menu
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -126,29 +166,25 @@ public class NoteListActivity extends AppCompatActivity {
             case R.id.menu_sort_alphabet:
                 if (!sortingVariable.equals(NoteDbSchema.NoteTable.Cols.TEXT)) {
                     sortingVariable = NoteDbSchema.NoteTable.Cols.TEXT;
-                    sortingReverse = "ASC";
-                    System.out.println("------ 1");
-                } else if (sortingReverse.equals("ASC")) {
-                    sortingReverse = "DESC";
-                    System.out.println("------ 2");
-                } else if (sortingReverse.equals("DESC")) {
-                    sortingReverse = "ASC";
-                    System.out.println("------ 3");
-                }
-                saveSharedPreferences(sortingVariable, sortingReverse);
+                    reverseVariable = true;
+                } else if (reverseVariable)
+                    reverseVariable = false;
+                else if (!reverseVariable)
+                    reverseVariable = true;
+                saveSharedPreferences(sortingVariable, reverseVariable);
                 updateUI();
                 break;
-            /** Sorting by date */
+            /** Sorting by date
+             * default position of top element is newest*/
             case R.id.menu_sort_date:
                 if (!sortingVariable.equals(NoteDbSchema.NoteTable.Cols.DATE)) {
                     sortingVariable = NoteDbSchema.NoteTable.Cols.DATE;
-                    sortingReverse = "ASC";
-                } else if (sortingReverse.equals("ASC")) {
-                    sortingReverse = "DESC";
-                } else if (sortingReverse.equals("DESC")) {
-                    sortingReverse = "ASC";
-                }
-                saveSharedPreferences(sortingVariable, sortingReverse);
+                    reverseVariable = false;
+                } else if (reverseVariable)
+                    reverseVariable = false;
+                else if (!reverseVariable)
+                    reverseVariable = true;
+                saveSharedPreferences(sortingVariable, reverseVariable);
                 updateUI();
                 break;
             case R.id.menu_settings:

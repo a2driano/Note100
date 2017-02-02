@@ -36,9 +36,9 @@ public class NoteStore {
         return sNoteStore;
     }
 
-    public List<NoteModel> getNotes(String sort, String reverse) {
+    public List<NoteModel> getNotes() {
         mNoteModelList = new ArrayList<>();
-        NoteCursorWrapper cursor = queryNotes(null, null, sort, reverse);
+        NoteCursorWrapper cursor = queryNotes(null, null);
         try {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
@@ -59,8 +59,7 @@ public class NoteStore {
     public NoteModel getNote(UUID id) {
         NoteCursorWrapper cursor = queryNotes(
                 NoteTable.Cols.UUID + " = ?",
-                new String[]{id.toString()},
-                null, null
+                new String[]{id.toString()}
         );
 
         try {
@@ -100,13 +99,7 @@ public class NoteStore {
     }
 
     /** keyword - ASC or DESC, reverse order switch */
-    private NoteCursorWrapper queryNotes(String whereClause, String[] whereArgs, String orderBy, String keyword) {
-        String orderByText;
-        if (orderBy != null & keyword != null)
-            orderByText = orderBy + " COLLATE NOCASE " + keyword + ";";
-        else
-            orderByText = null;
-
+    private NoteCursorWrapper queryNotes(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
                 NoteTable.NAME,
                 null,
@@ -114,24 +107,8 @@ public class NoteStore {
                 whereArgs,
                 null,
                 null,
-                orderByText
-//                orderBy + " COLLATE NOCASE " + keyword + ";"
-//                NoteTable.Cols.DATE + " COLLATE NOCASE ASC;"
-//                NoteTable.Cols.TEXT + " COLLATE NOCASE DESC;"//reverse DESC
+                null
         );
         return new NoteCursorWrapper(cursor);
     }
-
-//    private NoteCursorWrapper queryNotes(String whereClause, String[] whereArgs) {
-//        Cursor cursor = mDatabase.query(
-//                NoteTable.NAME,
-//                null,
-//                whereClause,
-//                whereArgs,
-//                null,
-//                null,
-//                null
-//        );
-//        return new NoteCursorWrapper(cursor);
-//    }
 }

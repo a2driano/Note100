@@ -28,11 +28,9 @@ public class NoteActivity extends AppCompatActivity {
     private NoteModel mNoteModel;
     private EditText mTextNote;
     private TextView mDateText;
-
     private NoteStore mNoteStore;
     private boolean isNew = false;
     private String mCheckColor;
-
     private Toolbar mToolbar;
 
     @Override
@@ -47,8 +45,7 @@ public class NoteActivity extends AppCompatActivity {
         mDateText = (TextView) findViewById(R.id.text_date_note_activity);
         mTextNote = (EditText) findViewById(R.id.noteText);
 
-
-        //Get data from intent
+        /** Get data from intent */
         createNoteView();
     }
 
@@ -73,7 +70,9 @@ public class NoteActivity extends AppCompatActivity {
         }
     }
 
-    /**When we return to NoteListActivity, instance of NoteModel add or update in to DB */
+    /**
+     * When we return to NoteListActivity, instance of NoteModel add or update in to DB
+     */
     @Override
     protected void onPause() {
         super.onPause();
@@ -92,7 +91,9 @@ public class NoteActivity extends AppCompatActivity {
         }
     }
 
-    /** Class for draw line in text field */
+    /**
+     * Class for draw line in text field
+     */
     public static class LineEditText extends EditText {
         private Rect mRect;
         private Paint mPaint;

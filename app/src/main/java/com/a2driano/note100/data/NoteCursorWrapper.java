@@ -5,7 +5,6 @@ import android.database.CursorWrapper;
 
 import com.a2driano.note100.model.NoteModel;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
