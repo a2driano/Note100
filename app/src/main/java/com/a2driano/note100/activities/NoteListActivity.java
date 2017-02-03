@@ -55,8 +55,7 @@ public class NoteListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
-                startActivity(intent);
+                createNote();
             }
         });
 
@@ -66,6 +65,14 @@ public class NoteListActivity extends AppCompatActivity {
         mNoteRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mNoteRecyclerView.setHasFixedSize(true);
         registerForContextMenu(mNoteRecyclerView);
+    }
+
+    /**
+     * Create new note
+     */
+    private void createNote() {
+        Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
+        startActivity(intent);
     }
 
     /**
@@ -143,6 +150,9 @@ public class NoteListActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Start NoteActivity with current note(UUID)
+     */
     private void createIntentForNoteActivity(String UUID) {
         Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
         intent.putExtra(EXTRA_MESSAGE_UUID, UUID);
@@ -162,6 +172,9 @@ public class NoteListActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
+            case R.id.create_note:
+                createNote();
+                break;
             /** Sorting by text */
             case R.id.menu_sort_alphabet:
                 if (!sortingVariable.equals(NoteDbSchema.NoteTable.Cols.TEXT)) {

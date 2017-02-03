@@ -33,5 +33,6 @@
         app:rippleColor="@color/colorPrimary"
         android:src="@drawable/ic_add_white_24dp"
         app:fabSize="normal"
+        app:layout_behavior="com.a2driano.note100.util.FAB_Float_on_Scroll"
         app:elevation="7dp"/>
 </android.support.design.widget.CoordinatorLayout>
