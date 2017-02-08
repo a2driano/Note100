@@ -1,5 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:visible="false"
+        android:id="@+id/menu_delete_actionbar">
+        <item
+            android:id="@+id/menu_delete_all"
+            android:icon="@android:drawable/ic_menu_delete"
+            android:showAsAction="ifRoom"
+            android:title="@string/menu_delete_all"
+            app:showAsAction="always">
+        </item>
+        <item
+            android:id="@+id/menu_delete_cancel"
+            android:icon="@android:drawable/ic_delete"
+            android:showAsAction="ifRoom"
+            android:title="@string/menu_delete_cancel"
+            app:showAsAction="always">
+        </item>
+    </group>
+
     <item
         android:id="@+id/create_note"
         android:title="@string/create_note">

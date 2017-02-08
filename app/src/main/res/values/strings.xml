@@ -13,6 +13,8 @@
     <string name="menu_sorting">Sorting</string>
     <string name="menu_setting">Settings</string>
     <string name="menu_delete">Delete</string>
+    <string name="menu_delete_all">DELETE</string>
+    <string name="menu_delete_cancel">CANCEL</string>
     <string name="create_note">Create note</string>
     <string name="menu_alphabetically">Sort alphabetically</string>
     <string name="menu_by_date">Sort by Date</string>
