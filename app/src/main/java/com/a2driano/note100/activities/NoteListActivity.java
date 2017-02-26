@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -291,18 +292,20 @@ public class NoteListActivity extends AppCompatActivity {
                 mSearchLayout.setVisibility(View.VISIBLE);
                 /** add focus on search view */
                 mSearchView.onActionViewExpanded();
+                mSearchViewEditText.requestFocus();
+                /** keyboard show */
+                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.showSoftInput(mSearchViewEditText, InputMethodManager.SHOW_IMPLICIT);
                 if (mActionBarMenu != null) {
                     mActionBarMenu.setGroupVisible(R.id.main_menu, false);
                     mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, false);
                     mActionBarMenu.setGroupVisible(R.id.cancel_search_block, true);
                 }
-                mSearchView.requestFocus();
                 break;
             /** Search icon click */
             case R.id.cancel_search_button:
                 mSearchLayout.setVisibility(View.GONE);
                 /** add focus on search view */
-                mSearchView.onActionViewExpanded();
                 mSearchViewEditText.setText("");
                 hideMenuActionBar();
                 break;
