@@ -18,4 +18,6 @@
     <string name="create_note">Create note</string>
     <string name="menu_alphabetically">Sort alphabetically</string>
     <string name="menu_by_date">Sort by Date</string>
+    <string name="menu_search">Search</string>
+    <string name="search_window">Search</string>
 </resources>

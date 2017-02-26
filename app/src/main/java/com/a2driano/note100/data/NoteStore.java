@@ -98,7 +98,6 @@ public class NoteStore {
         return values;
     }
 
-    /** keyword - ASC or DESC, reverse order switch */
     private NoteCursorWrapper queryNotes(String whereClause, String[] whereArgs) {
         Cursor cursor = mDatabase.query(
                 NoteTable.NAME,

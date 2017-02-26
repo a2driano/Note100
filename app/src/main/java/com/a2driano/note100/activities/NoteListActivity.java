@@ -1,14 +1,18 @@
 package com.a2driano.note100.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,8 +20,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -26,6 +33,7 @@ import com.a2driano.note100.R;
 import com.a2driano.note100.data.NoteDbSchema;
 import com.a2driano.note100.data.NoteStore;
 import com.a2driano.note100.model.NoteModel;
+import com.a2driano.note100.util.CommonToast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,6 +59,10 @@ public class NoteListActivity extends AppCompatActivity {
     private boolean reverseVariable;
     private boolean mDeleteAll;
     private boolean mMenuDeleteAllVisible;
+    private SearchView mSearchView;
+    private EditText mSearchViewEditText;
+    private LinearLayout mSearchLayout;
+    private Menu mActionBarMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +79,13 @@ public class NoteListActivity extends AppCompatActivity {
                 createNote();
             }
         });
+
+        mSearchView = (SearchView) findViewById(R.id.search_view);
+        mSearchViewEditText = ((EditText) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
+        mSearchViewEditText.setTextColor(Color.WHITE);
+
+
+        mSearchLayout = (LinearLayout) findViewById(R.id.search_element);
 
         loadSharedPreferences();
 
@@ -181,12 +200,14 @@ public class NoteListActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+        this.mActionBarMenu = menu;
         return true;
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.setGroupVisible(R.id.menu_delete_actionbar, mMenuDeleteAllVisible);
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -195,6 +216,7 @@ public class NoteListActivity extends AppCompatActivity {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        String messageToast = "";
         switch (item.getItemId()) {
             case R.id.create_note:
                 createNote();
@@ -204,12 +226,17 @@ public class NoteListActivity extends AppCompatActivity {
                 if (!sortingVariable.equals(NoteDbSchema.NoteTable.Cols.TEXT)) {
                     sortingVariable = NoteDbSchema.NoteTable.Cols.TEXT;
                     reverseVariable = true;
-                } else if (reverseVariable)
+                    messageToast = "Sort note from A to Z";
+                } else if (reverseVariable) {
                     reverseVariable = false;
-                else if (!reverseVariable)
+                    messageToast = "Sort note from Z to A";
+                } else if (!reverseVariable) {
                     reverseVariable = true;
+                    messageToast = "Sort note from A to Z";
+                }
                 saveSharedPreferences(sortingVariable, reverseVariable);
                 updateUI();
+                CommonToast.showToast(this, messageToast);
                 break;
             /** Sorting by date
              * default position of top element is newest*/
@@ -217,12 +244,17 @@ public class NoteListActivity extends AppCompatActivity {
                 if (!sortingVariable.equals(NoteDbSchema.NoteTable.Cols.DATE)) {
                     sortingVariable = NoteDbSchema.NoteTable.Cols.DATE;
                     reverseVariable = false;
-                } else if (reverseVariable)
+                    messageToast = "Sort by newest";
+                } else if (reverseVariable) {
                     reverseVariable = false;
-                else if (!reverseVariable)
+                    messageToast = "Sort by newest";
+                } else if (!reverseVariable) {
                     reverseVariable = true;
+                    messageToast = "Sort by oldest";
+                }
                 saveSharedPreferences(sortingVariable, reverseVariable);
                 updateUI();
+                CommonToast.showToast(this, messageToast);
                 break;
             case R.id.menu_settings:
                 break;
@@ -246,13 +278,33 @@ public class NoteListActivity extends AppCompatActivity {
                 }
 //                updateUI();
                 onResume();
-                fab.setVisibility(View.VISIBLE);
+//                fab.setVisibility(View.VISIBLE);
                 hideMenuActionBar();
                 break;
             /** Cancel delete menu */
             case R.id.menu_delete_cancel:
                 hideMenuActionBar();
                 mNoteAdapter.notifyDataSetChanged();
+                break;
+            /** Search icon click */
+            case R.id.search_note:
+                mSearchLayout.setVisibility(View.VISIBLE);
+                /** add focus on search view */
+                mSearchView.onActionViewExpanded();
+                if (mActionBarMenu != null) {
+                    mActionBarMenu.setGroupVisible(R.id.main_menu, false);
+                    mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, false);
+                    mActionBarMenu.setGroupVisible(R.id.cancel_search_block, true);
+                }
+                mSearchView.requestFocus();
+                break;
+            /** Search icon click */
+            case R.id.cancel_search_button:
+                mSearchLayout.setVisibility(View.GONE);
+                /** add focus on search view */
+                mSearchView.onActionViewExpanded();
+                mSearchViewEditText.setText("");
+                hideMenuActionBar();
                 break;
             default:
                 break;
@@ -264,6 +316,7 @@ public class NoteListActivity extends AppCompatActivity {
         mDeleteAll = false;
         mMenuDeleteAllVisible = false;
         invalidateOptionsMenu();
+        fab.setVisibility(View.VISIBLE);
 
         /** Remember top position on screen
          * and after setAdapter
@@ -379,6 +432,9 @@ public class NoteListActivity extends AppCompatActivity {
         private List<NoteModel> mNoteModelList;
         private HashMap<Integer, UUID> mNoteHolderListForDelete;
         private int position;
+        private Context context = NoteListActivity.this;
+        // Allows to remember the last item shown on screen
+        private int lastPosition = -1;
 
         public NoteAdapter(List<NoteModel> noteModelList) {
             mNoteModelList = noteModelList;
@@ -441,6 +497,17 @@ public class NoteListActivity extends AppCompatActivity {
                             }
                         }
                 );
+            }
+            // Here you apply the animation when the view is bound
+            setAnimation(holder.itemView, position);
+        }
+
+        private void setAnimation(View viewToAnimate, int position) {
+            // If the bound view wasn't previously displayed on screen, it's animated
+            if (position > lastPosition) {
+                Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
+                viewToAnimate.startAnimation(animation);
+                lastPosition = position;
             }
         }
 

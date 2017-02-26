@@ -1,46 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
       xmlns:app="http://schemas.android.com/apk/res-auto">
-    <group android:visible="false"
-        android:id="@+id/menu_delete_actionbar">
+    <group
+        android:id="@+id/menu_delete_actionbar"
+        android:visible="false">
         <item
             android:id="@+id/menu_delete_all"
-            android:icon="@android:drawable/ic_menu_delete"
-            android:showAsAction="ifRoom"
             android:title="@string/menu_delete_all"
-            app:showAsAction="always">
+            app:showAsAction="always|withText">
         </item>
         <item
             android:id="@+id/menu_delete_cancel"
-            android:icon="@android:drawable/ic_delete"
-            android:showAsAction="ifRoom"
             android:title="@string/menu_delete_cancel"
+            app:showAsAction="always|withText"
+            >
+        </item>
+    </group>
+    <!--<group-->
+    <!--android:id="@+id/menu_search">-->
+    <!--<item-->
+    <!--android:id="@+id/search_view_top"-->
+    <!--android:title="Search"-->
+    <!--app:showAsAction="always"-->
+    <!--android:actionViewClass="android.support.v7.widget.SearchView">-->
+    <!--</item>-->
+
+    <!--</group>-->
+    <group
+        android:id="@+id/cancel_search_block">
+        <item
+            android:id="@+id/cancel_search_button"
+            android:icon="@drawable/delete"
+            android:title="@string/search_window"
+            android:visible="false"
             app:showAsAction="always">
         </item>
     </group>
 
-    <item
-        android:id="@+id/create_note"
-        android:title="@string/create_note">
-    </item>
-    <item
-        android:id="@+id/menu_sorting"
-        android:title="@string/menu_sorting">
-        <menu>
-            <item
-                android:id="@+id/menu_sort_alphabet"
-                android:title="@string/menu_alphabetically"/>
-            <item
-                android:id="@+id/menu_sort_date"
-                android:title="@string/menu_by_date"/>
-        </menu>
-    </item>
-    <item
-        android:id="@+id/menu_settings"
-        android:title="@string/menu_setting">
-    </item>
-    <item
-        android:id="@+id/menu_delete"
-        android:title="@string/menu_delete">
-    </item>
+
+    <group android:id="@+id/main_menu">
+        <item
+            android:id="@+id/search_note"
+            android:icon="@drawable/search"
+            android:title="@string/search_window"
+            app:showAsAction="always">
+        </item>
+        <item
+            android:id="@+id/create_note"
+            android:title="@string/create_note">
+        </item>
+        <item
+            android:id="@+id/menu_sorting"
+            android:title="@string/menu_sorting">
+            <menu>
+                <item
+                    android:id="@+id/menu_sort_alphabet"
+                    android:title="@string/menu_alphabetically"/>
+                <item
+                    android:id="@+id/menu_sort_date"
+                    android:title="@string/menu_by_date"/>
+            </menu>
+        </item>
+        <item
+            android:id="@+id/menu_settings"
+            android:title="@string/menu_setting">
+        </item>
+        <item
+            android:id="@+id/menu_delete"
+            android:title="@string/menu_delete">
+        </item>
+    </group>
 </menu>

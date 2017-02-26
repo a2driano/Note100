@@ -10,7 +10,6 @@
 
 <!--</resources>-->
 <resources>
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
@@ -18,5 +17,14 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="searchViewStyle">@style/AppTheme.SearchView</item>
+        <item name="android:textColorHint">@android:color/white</item>
     </style>
+    <style name="AppTheme.SearchView" parent="Widget.AppCompat.SearchView">
+        <item name="android:editTextColor">@android:color/white</item>
+        <item name="android:textColorHint">@android:color/white</item>
+        <item name="closeIcon">@android:color/transparent</item>
+        <item name="searchHintIcon">@drawable/search</item>
+    </style>
+
 </resources>
