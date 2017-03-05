@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -85,8 +86,28 @@ public class NoteListActivity extends AppCompatActivity {
         mSearchViewEditText = ((EditText) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
         mSearchViewEditText.setTextColor(Color.WHITE);
 
-
         mSearchLayout = (LinearLayout) findViewById(R.id.search_element);
+        /** Search logic */
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                callSearch(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+//              if (searchView.isExpanded() && TextUtils.isEmpty(newText)) {
+                callSearch(newText);
+//              }
+                return true;
+            }
+
+            public void callSearch(String query) {
+                updateUI(query);
+            }
+
+        });
 
         loadSharedPreferences();
 
@@ -139,7 +160,16 @@ public class NoteListActivity extends AppCompatActivity {
     private void updateUI() {
         mNoteStore = NoteStore.get(NoteListActivity.this);
         notes = mNoteStore.getNotes();
+        sortListNoteForAdapter();
+    }
 
+    private void updateUI(String text) {
+        mNoteStore = NoteStore.get(NoteListActivity.this);
+        notes = mNoteStore.getNotes(text);
+        sortListNoteForAdapter();
+    }
+
+    private void sortListNoteForAdapter(){
         sortNoteList(sortingVariable, reverseVariable);
         if (mNoteAdapter == null) {
             mNoteAdapter = new NoteAdapter(notes);

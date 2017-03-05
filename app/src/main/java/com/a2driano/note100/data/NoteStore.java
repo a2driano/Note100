@@ -51,6 +51,22 @@ public class NoteStore {
         return mNoteModelList;
     }
 
+    /** Search func */
+    public List<NoteModel> getNotes(String searchText) {
+        mNoteModelList = new ArrayList<>();
+        NoteCursorWrapper cursor = queryNotes(searchText);
+        try {
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                mNoteModelList.add(cursor.getNote());
+                cursor.moveToNext();
+            }
+        } finally {
+            cursor.close();
+        }
+        return mNoteModelList;
+    }
+
     public void addNote(NoteModel noteModel) {
         ContentValues values = getContentValues(noteModel);
         mDatabase.insert(NoteTable.NAME, null, values);
@@ -104,6 +120,19 @@ public class NoteStore {
                 null,
                 whereClause,
                 whereArgs,
+                null,
+                null,
+                null
+        );
+        return new NoteCursorWrapper(cursor);
+    }
+
+    private NoteCursorWrapper queryNotes(String searchText) {
+        Cursor cursor = mDatabase.query(
+                NoteTable.NAME,
+                null,
+                NoteTable.Cols.TEXT + " LIKE '%" + searchText + "%'",
+                null,
                 null,
                 null,
                 null
