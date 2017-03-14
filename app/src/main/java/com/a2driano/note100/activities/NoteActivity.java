@@ -10,6 +10,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -30,8 +33,10 @@ public class NoteActivity extends AppCompatActivity {
     private TextView mDateText;
     private NoteStore mNoteStore;
     private boolean isNew = false;
+    private boolean mNextStep = false;
     private String mCheckColor;
     private Toolbar mToolbar;
+    private int mResultForIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +44,11 @@ public class NoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        if (mToolbar != null) {
+            setSupportActionBar(mToolbar);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -51,14 +61,14 @@ public class NoteActivity extends AppCompatActivity {
 
     private void createNoteView() {
         Intent intent = this.getIntent();
-        if (intent.getStringExtra(EXTRA_MESSAGE_UUID) == null) {
+        if (intent.getStringExtra(EXTRA_MESSAGE_UUID) == null & !mNextStep) {
             mNoteModel = new NoteModel();
             mNoteModel.setDate(new Date());
             mNoteModel.setColor(new NoteColor().getYELLOW());
 
             mDateText.setText(getReadableModifiedDateForNoteActivity(mNoteModel.getDate()));
             isNew = true;
-        } else {
+        } else if (!mNextStep) {
             mNoteModel = NoteStore.get(this)
                     .getNote(UUID.fromString(intent.getStringExtra(EXTRA_MESSAGE_UUID)));
             //add info to view
@@ -67,34 +77,66 @@ public class NoteActivity extends AppCompatActivity {
             mTextNote.setSelection(mTextNote.getText().length());
 
             mCheckColor = mNoteModel.getColor();
+//            isNew = false;
         }
     }
 
     /**
-     * When we return to NoteListActivity, instance of NoteModel add or update in to DB
+     * For back narrow in toolbar click
      */
     @Override
-    protected void onPause() {
-        super.onPause();
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        if (menuItem.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+        return super.onOptionsItemSelected(menuItem);
+    }
+
+    /**
+     * Return result to home activity
+     */
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent();
         mNoteStore = NoteStore.get(this);
-        if (isNew && (mTextNote.getText().length() != 0)) {
+        if (isNew & (mTextNote.getText().length() != 0)) {
             //if note is new and user create text
             mNoteModel.setText(mTextNote.getText().toString());
             mNoteStore.addNote(mNoteModel);
+            mResultForIntent = RESULT_OK;
         } else if (!isNew
-                && (!mNoteModel.getText().equals(mTextNote.getText().toString())
-                || !mCheckColor.equals(mNoteModel.getColor().toString()))) {
+                & (!mNoteModel.getText().equals(mTextNote.getText().toString())
+                || !mCheckColor.equals(mNoteModel.getColor()))) {
             //if note is exist
             mNoteModel.setText(mTextNote.getText().toString());
             mNoteModel.setColor(mCheckColor);
             mNoteStore.updateNote(mNoteModel);
+            mResultForIntent = RESULT_OK;
+        } else {
+            mResultForIntent = RESULT_CANCELED;
         }
+        isNew = false;
+        setResult(mResultForIntent, intent);
+        super.onBackPressed();
     }
+
+//    /**
+//     * When we return to NoteListActivity, instance of NoteModel add or update in to DB
+//     */
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//        /** for onResume method call */
+//        mTextNote.setText(mNoteModel.getText());
+//        mCheckColor = mNoteModel.getColor();
+//        mNextStep = true;
+//
+//    }
 
     /**
      * Class for draw line in text field
      */
-    public static class LineEditText extends EditText {
+    public static class LineEditText extends android.support.v7.widget.AppCompatEditText {
         private Rect mRect;
         private Paint mPaint;
 

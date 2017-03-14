@@ -12,8 +12,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
-import android.text.TextUtils;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -28,7 +26,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.a2driano.note100.R;
@@ -37,7 +34,6 @@ import com.a2driano.note100.data.NoteStore;
 import com.a2driano.note100.model.NoteModel;
 import com.a2driano.note100.util.CommonToast;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -49,22 +45,26 @@ import static com.a2driano.note100.util.UtilNote.getReadableModifiedDate;
 
 public class NoteListActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE_UUID = "com.a2driano.note100.activities.UUID";
+    public static final String EXTRA_MESSAGE_SEARCH_IS_ACTIVE = "com.a2driano.note100.activities.Search";
     //    public final static String EXTRA_MESSAGE_COLOR = "com.a2driano.note100.activities.COLOR";
     private RecyclerView mNoteRecyclerView;
     private NoteAdapter mNoteAdapter;
     private FloatingActionButton fab;
     private Toolbar mToolbar;
-    private List<NoteModel> notes;
+    private List<NoteModel> mNotes;
     private NoteStore mNoteStore;
     private SharedPreferences mPreferences;
     private String sortingVariable;
     private boolean reverseVariable;
     private boolean mDeleteAll;
     private boolean mMenuDeleteAllVisible;
+    private boolean mIsSearshActive;
+    private String mSearchText;
     private SearchView mSearchView;
     private EditText mSearchViewEditText;
     private LinearLayout mSearchLayout;
     private Menu mActionBarMenu;
+    static final int NOTE_START_ACTIVITY = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,13 +78,15 @@ public class NoteListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createNote();
+                createIntentForNoteActivity(null);
             }
         });
 
         mSearchView = (SearchView) findViewById(R.id.search_view);
         mSearchViewEditText = ((EditText) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
         mSearchViewEditText.setTextColor(Color.WHITE);
+        mIsSearshActive = false;
+        mSearchText = "";
 
         mSearchLayout = (LinearLayout) findViewById(R.id.search_element);
         /** Search logic */
@@ -97,16 +99,13 @@ public class NoteListActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-//              if (searchView.isExpanded() && TextUtils.isEmpty(newText)) {
                 callSearch(newText);
-//              }
                 return true;
             }
 
             public void callSearch(String query) {
                 updateUI(query);
             }
-
         });
 
         loadSharedPreferences();
@@ -118,15 +117,9 @@ public class NoteListActivity extends AppCompatActivity {
 
         mDeleteAll = false;
         mMenuDeleteAllVisible = false;
+        updateUI();
     }
 
-    /**
-     * Create new note
-     */
-    private void createNote() {
-        Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
-        startActivity(intent);
-    }
 
     /**
      * Save sort variables in Shared Preferences
@@ -136,6 +129,7 @@ public class NoteListActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = mPreferences.edit();
         editor.putString("SORT", sort);
         editor.putBoolean("REVERSE", reverse);
+//        editor.putBoolean("SEARCH", reverse);
         editor.commit();
     }
 
@@ -151,7 +145,7 @@ public class NoteListActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        updateUI();
+//        updateUI();
     }
 
     /**
@@ -159,23 +153,24 @@ public class NoteListActivity extends AppCompatActivity {
      */
     private void updateUI() {
         mNoteStore = NoteStore.get(NoteListActivity.this);
-        notes = mNoteStore.getNotes();
+        mNotes = mNoteStore.getNotes();
         sortListNoteForAdapter();
     }
 
     private void updateUI(String text) {
+        mSearchText = text;
         mNoteStore = NoteStore.get(NoteListActivity.this);
-        notes = mNoteStore.getNotes(text);
+        mNotes = mNoteStore.getNotes(text);
         sortListNoteForAdapter();
     }
 
-    private void sortListNoteForAdapter(){
+    private void sortListNoteForAdapter() {
         sortNoteList(sortingVariable, reverseVariable);
         if (mNoteAdapter == null) {
-            mNoteAdapter = new NoteAdapter(notes);
+            mNoteAdapter = new NoteAdapter(mNotes);
             mNoteRecyclerView.setAdapter(mNoteAdapter);
         } else {
-            mNoteAdapter.setNotes(notes);
+            mNoteAdapter.setNotes(mNotes);
             mNoteAdapter.notifyDataSetChanged();
         }
     }
@@ -185,28 +180,28 @@ public class NoteListActivity extends AppCompatActivity {
      */
     private void sortNoteList(String parameter, boolean reverse) {
         if (parameter.equals(NoteDbSchema.NoteTable.Cols.TEXT)) {
-            Collections.sort(notes, new Comparator<NoteModel>() {
+            Collections.sort(mNotes, new Comparator<NoteModel>() {
                 @Override
                 public int compare(NoteModel o1, NoteModel o2) {
                     return o1.getText().toUpperCase().compareTo(o2.getText().toUpperCase());
                 }
             });
             if (!reverse)
-                Collections.sort(notes, new Comparator<NoteModel>() {
+                Collections.sort(mNotes, new Comparator<NoteModel>() {
                     @Override
                     public int compare(NoteModel o1, NoteModel o2) {
                         return o2.getText().toUpperCase().compareTo(o1.getText().toUpperCase());
                     }
                 });
         } else {
-            Collections.sort(notes, new Comparator<NoteModel>() {
+            Collections.sort(mNotes, new Comparator<NoteModel>() {
                 @Override
                 public int compare(NoteModel o1, NoteModel o2) {
                     return o1.getDate().compareTo(o2.getDate());
                 }
             });
             if (!reverse)
-                Collections.sort(notes, new Comparator<NoteModel>() {
+                Collections.sort(mNotes, new Comparator<NoteModel>() {
                     @Override
                     public int compare(NoteModel o1, NoteModel o2) {
                         return o2.getDate().compareTo(o1.getDate());
@@ -216,13 +211,29 @@ public class NoteListActivity extends AppCompatActivity {
     }
 
     /**
-     * Start NoteActivity with current note(UUID)
+     * Start NoteActivity with current note(UUID) or new note
      */
     private void createIntentForNoteActivity(String UUID) {
         Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
-        intent.putExtra(EXTRA_MESSAGE_UUID, UUID);
-        startActivity(intent);
+        if (UUID != null)
+            intent.putExtra(EXTRA_MESSAGE_UUID, UUID);
+//        intent.putExtra(EXTRA_MESSAGE_SEARCH_IS_ACTIVE, mIsSearshActive);
+        startActivityForResult(intent, NOTE_START_ACTIVITY);
     }
+
+    /**
+     * Return result to current activity from NoteActivity
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        /** If search not active */
+        if (resultCode == RESULT_OK & mSearchText != "")
+            updateUI(mSearchText);
+        else if (resultCode == RESULT_OK)
+            updateUI();
+    }
+
 
     /**
      * Create menu
@@ -250,7 +261,7 @@ public class NoteListActivity extends AppCompatActivity {
         String messageToast = "";
         switch (item.getItemId()) {
             case R.id.create_note:
-                createNote();
+                createIntentForNoteActivity(null);
                 break;
             /** Sorting by text */
             case R.id.menu_sort_alphabet:
@@ -269,8 +280,7 @@ public class NoteListActivity extends AppCompatActivity {
                 updateUI();
                 CommonToast.showToast(this, messageToast);
                 break;
-            /** Sorting by date
-             * default position of top element is newest*/
+            /** Sorting by date default position of top element is newest*/
             case R.id.menu_sort_date:
                 if (!sortingVariable.equals(NoteDbSchema.NoteTable.Cols.DATE)) {
                     sortingVariable = NoteDbSchema.NoteTable.Cols.DATE;
@@ -289,13 +299,20 @@ public class NoteListActivity extends AppCompatActivity {
                 break;
             case R.id.menu_settings:
                 break;
+            /** Delete menu option click*/
             case R.id.menu_delete:
                 mDeleteAll = true;
-                updateUI();
                 mMenuDeleteAllVisible = true;
-                invalidateOptionsMenu();
+                if (mActionBarMenu != null) {
+                    mActionBarMenu.setGroupVisible(R.id.main_menu, false);
+                    mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, true);
+                    mActionBarMenu.setGroupVisible(R.id.cancel_search_block, false);
+                }
+                updateUI();
+//                invalidateOptionsMenu();
                 fab.setVisibility(View.GONE);
                 break;
+            /** Delete all option click*/
             case R.id.menu_delete_all:
                 HashMap<Integer, UUID> hashMapForDelete = mNoteAdapter.mNoteHolderListForDelete;
                 for (Map.Entry<Integer, UUID> entry : hashMapForDelete.entrySet()) {
@@ -307,8 +324,8 @@ public class NoteListActivity extends AppCompatActivity {
 //                    mNoteAdapter.mNoteModelList.remove(position);
 //                    mNoteAdapter.notifyItemRemoved(position);
                 }
-//                updateUI();
-                onResume();
+                updateUI();
+//                onResume();
 //                fab.setVisibility(View.VISIBLE);
                 hideMenuActionBar();
                 break;
@@ -320,9 +337,11 @@ public class NoteListActivity extends AppCompatActivity {
             /** Search icon click */
             case R.id.search_note:
                 mSearchLayout.setVisibility(View.VISIBLE);
+                fab.setVisibility(View.GONE);
                 /** add focus on search view */
                 mSearchView.onActionViewExpanded();
                 mSearchViewEditText.requestFocus();
+                mIsSearshActive = true;
                 /** keyboard show */
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.showSoftInput(mSearchViewEditText, InputMethodManager.SHOW_IMPLICIT);
@@ -332,11 +351,13 @@ public class NoteListActivity extends AppCompatActivity {
                     mActionBarMenu.setGroupVisible(R.id.cancel_search_block, true);
                 }
                 break;
-            /** Search icon click */
+            /** Search cancel icon click */
             case R.id.cancel_search_button:
                 mSearchLayout.setVisibility(View.GONE);
                 /** add focus on search view */
                 mSearchViewEditText.setText("");
+                mIsSearshActive = false;
+                mSearchText = "";
                 hideMenuActionBar();
                 break;
             default:
