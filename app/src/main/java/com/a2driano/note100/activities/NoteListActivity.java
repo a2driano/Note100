@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -82,31 +83,31 @@ public class NoteListActivity extends AppCompatActivity {
             }
         });
 
-        mSearchView = (SearchView) findViewById(R.id.search_view);
-        mSearchViewEditText = ((EditText) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
-        mSearchViewEditText.setTextColor(Color.WHITE);
+//        mSearchView = (SearchView) findViewById(R.id.search_view);
+//        mSearchViewEditText = ((EditText) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
+//        mSearchViewEditText.setTextColor(Color.WHITE);
         mIsSearshActive = false;
         mSearchText = "";
 
-        mSearchLayout = (LinearLayout) findViewById(R.id.search_element);
-        /** Search logic */
-        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                callSearch(query);
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                callSearch(newText);
-                return true;
-            }
-
-            public void callSearch(String query) {
-                updateUI(query);
-            }
-        });
+//        mSearchLayout = (LinearLayout) findViewById(R.id.search_element);
+//        /** Search logic */
+//        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+//            @Override
+//            public boolean onQueryTextSubmit(String query) {
+//                callSearch(query);
+//                return true;
+//            }
+//
+//            @Override
+//            public boolean onQueryTextChange(String newText) {
+//                callSearch(newText);
+//                return true;
+//            }
+//
+//            public void callSearch(String query) {
+//                updateUI(query);
+//            }
+//        });
 
         loadSharedPreferences();
 
@@ -243,6 +244,29 @@ public class NoteListActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
         this.mActionBarMenu = menu;
+
+//        mSearchView = (SearchView) findViewById(R.id.search_view);
+        mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search_view));
+        mSearchViewEditText = ((EditText) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
+        mSearchViewEditText.setTextColor(Color.WHITE);
+        /** Search logic */
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                callSearch(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                callSearch(newText);
+                return true;
+            }
+
+            public void callSearch(String query) {
+                updateUI(query);
+            }
+        });
         return true;
     }
 
@@ -306,7 +330,7 @@ public class NoteListActivity extends AppCompatActivity {
                 if (mActionBarMenu != null) {
                     mActionBarMenu.setGroupVisible(R.id.main_menu, false);
                     mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, true);
-                    mActionBarMenu.setGroupVisible(R.id.cancel_search_block, false);
+                    mActionBarMenu.setGroupVisible(R.id.search_block_visible, false);
                 }
                 updateUI();
 //                invalidateOptionsMenu();
@@ -336,29 +360,22 @@ public class NoteListActivity extends AppCompatActivity {
                 break;
             /** Search icon click */
             case R.id.search_note:
-                mSearchLayout.setVisibility(View.VISIBLE);
                 fab.setVisibility(View.GONE);
                 /** add focus on search view */
                 mSearchView.onActionViewExpanded();
                 mSearchViewEditText.requestFocus();
                 mIsSearshActive = true;
-                /** keyboard show */
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(mSearchViewEditText, InputMethodManager.SHOW_IMPLICIT);
+                imm.showSoftInput(mSearchView, InputMethodManager.SHOW_IMPLICIT);
                 if (mActionBarMenu != null) {
+                    mActionBarMenu.setGroupVisible(R.id.search_block_visible, true);
                     mActionBarMenu.setGroupVisible(R.id.main_menu, false);
                     mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, false);
-                    mActionBarMenu.setGroupVisible(R.id.cancel_search_block, true);
                 }
                 break;
             /** Search cancel icon click */
             case R.id.cancel_search_button:
-                mSearchLayout.setVisibility(View.GONE);
-                /** add focus on search view */
-                mSearchViewEditText.setText("");
-                mIsSearshActive = false;
-                mSearchText = "";
-                hideMenuActionBar();
+                onBackPressed();
                 break;
             default:
                 break;
@@ -378,6 +395,22 @@ public class NoteListActivity extends AppCompatActivity {
         Parcelable parcelable = mNoteRecyclerView.getLayoutManager().onSaveInstanceState();
         mNoteRecyclerView.setAdapter(mNoteAdapter);
         mNoteRecyclerView.getLayoutManager().onRestoreInstanceState(parcelable);
+    }
+
+    @Override
+    public void onBackPressed() {
+        /** hide search */
+        if(mIsSearshActive){
+            /** keyboard hide */
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(mSearchViewEditText.getWindowToken(), 0);
+            mSearchViewEditText.setText("");
+            mSearchText = "";
+            mIsSearshActive = false;
+            hideMenuActionBar();
+            return;
+        }
+        super.onBackPressed();
     }
 
     @Override
@@ -430,6 +463,7 @@ public class NoteListActivity extends AppCompatActivity {
         /** Change color action */
         noteModel.setColor(color);
         mNoteStore.updateNote(noteModel);
+        mNoteAdapter.mNoteModelList.get(position).setColor(color);
         return super.onContextItemSelected(item);
     }
 
@@ -553,7 +587,7 @@ public class NoteListActivity extends AppCompatActivity {
                 );
             }
             // Here you apply the animation when the view is bound
-            setAnimation(holder.itemView, position);
+//            setAnimation(holder.itemView, position);
         }
 
         private void setAnimation(View viewToAnimate, int position) {

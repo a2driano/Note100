@@ -65,6 +65,7 @@ public class NoteActivity extends AppCompatActivity {
             mNoteModel = new NoteModel();
             mNoteModel.setDate(new Date());
             mNoteModel.setColor(new NoteColor().getYELLOW());
+            mNoteModel.setText("");
 
             mDateText.setText(getReadableModifiedDateForNoteActivity(mNoteModel.getDate()));
             isNew = true;
@@ -75,10 +76,9 @@ public class NoteActivity extends AppCompatActivity {
             mDateText.setText(getReadableModifiedDateForNoteActivity(mNoteModel.getDate()));
             mTextNote.setText(mNoteModel.getText());
             mTextNote.setSelection(mTextNote.getText().length());
-
-            mCheckColor = mNoteModel.getColor();
 //            isNew = false;
         }
+        mCheckColor = mNoteModel.getColor();
     }
 
     /**
