@@ -1,5 +1,6 @@
 package com.a2driano.note100.activities;
 
+import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,15 +14,20 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -46,7 +52,7 @@ import static com.a2driano.note100.util.UtilNote.getReadableModifiedDate;
 
 public class NoteListActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE_UUID = "com.a2driano.note100.activities.UUID";
-    public static final String EXTRA_MESSAGE_SEARCH_IS_ACTIVE = "com.a2driano.note100.activities.Search";
+    //    public static final String EXTRA_MESSAGE_SEARCH_IS_ACTIVE = "com.a2driano.note100.activities.Search";
     //    public final static String EXTRA_MESSAGE_COLOR = "com.a2driano.note100.activities.COLOR";
     private RecyclerView mNoteRecyclerView;
     private NoteAdapter mNoteAdapter;
@@ -67,6 +73,13 @@ public class NoteListActivity extends AppCompatActivity {
     private Menu mActionBarMenu;
     static final int NOTE_START_ACTIVITY = 1;
 
+    /**
+     * Save instance variable
+     */
+    private final String MENU_DELETE_IS_ACTIVE = "active";
+    private final String SEARCH_IS_ACTIVE = "search is active process";
+    private final String SEARCH_LETTERS = "searching letter in EditText";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,31 +96,8 @@ public class NoteListActivity extends AppCompatActivity {
             }
         });
 
-//        mSearchView = (SearchView) findViewById(R.id.search_view);
-//        mSearchViewEditText = ((EditText) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
-//        mSearchViewEditText.setTextColor(Color.WHITE);
         mIsSearshActive = false;
         mSearchText = "";
-
-//        mSearchLayout = (LinearLayout) findViewById(R.id.search_element);
-//        /** Search logic */
-//        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-//            @Override
-//            public boolean onQueryTextSubmit(String query) {
-//                callSearch(query);
-//                return true;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String newText) {
-//                callSearch(newText);
-//                return true;
-//            }
-//
-//            public void callSearch(String query) {
-//                updateUI(query);
-//            }
-//        });
 
         loadSharedPreferences();
 
@@ -118,9 +108,16 @@ public class NoteListActivity extends AppCompatActivity {
 
         mDeleteAll = false;
         mMenuDeleteAllVisible = false;
+
+        if (savedInstanceState != null) {
+            if (mMenuDeleteAllVisible = savedInstanceState.getBoolean(MENU_DELETE_IS_ACTIVE)) {
+
+            } else if (mIsSearshActive = savedInstanceState.getBoolean(SEARCH_IS_ACTIVE)) {
+                mSearchText = savedInstanceState.getString(SEARCH_LETTERS);
+            }
+        }
         updateUI();
     }
-
 
     /**
      * Save sort variables in Shared Preferences
@@ -141,6 +138,19 @@ public class NoteListActivity extends AppCompatActivity {
         mPreferences = getPreferences(MODE_PRIVATE);
         sortingVariable = mPreferences.getString("SORT", NoteDbSchema.NoteTable.Cols.DATE);
         reverseVariable = mPreferences.getBoolean("REVERSE", false);
+    }
+
+    /**
+     * Save instance state
+     */
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current state
+        savedInstanceState.putBoolean(MENU_DELETE_IS_ACTIVE, mMenuDeleteAllVisible);
+        savedInstanceState.putBoolean(SEARCH_IS_ACTIVE, mIsSearshActive);
+        savedInstanceState.putString(SEARCH_LETTERS, mSearchText);
+
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
@@ -247,8 +257,27 @@ public class NoteListActivity extends AppCompatActivity {
 
 //        mSearchView = (SearchView) findViewById(R.id.search_view);
         mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search_view));
+        mSearchView.setMaxWidth(Integer.MAX_VALUE);
         mSearchViewEditText = ((EditText) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
-        mSearchViewEditText.setTextColor(Color.WHITE);
+
+        /** Start search logic from bundle*/
+        if (mIsSearshActive) {
+            openSearchView();
+            mSearchViewEditText.setText(mSearchText);
+            mSearchView.setQuery(mSearchView.getQuery(), true);
+            /** Programmatically click enter button in keyboard */
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                        Instrumentation inst = new Instrumentation();
+                            inst.sendKeyDownUpSync(KeyEvent.KEYCODE_ENTER);
+                }
+            }).start();
+
+        }
+
+//        mSearchViewEditText.setTextColor(Color.BLACK);
+//        mSearchView.setBackgroundColor(Color.WHITE);
         /** Search logic */
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -269,6 +298,7 @@ public class NoteListActivity extends AppCompatActivity {
         });
         return true;
     }
+
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -360,27 +390,87 @@ public class NoteListActivity extends AppCompatActivity {
                 break;
             /** Search icon click */
             case R.id.search_note:
-                fab.setVisibility(View.GONE);
-                /** add focus on search view */
-                mSearchView.onActionViewExpanded();
-                mSearchViewEditText.requestFocus();
                 mIsSearshActive = true;
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.showSoftInput(mSearchView, InputMethodManager.SHOW_IMPLICIT);
-                if (mActionBarMenu != null) {
-                    mActionBarMenu.setGroupVisible(R.id.search_block_visible, true);
-                    mActionBarMenu.setGroupVisible(R.id.main_menu, false);
-                    mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, false);
-                }
+                openSearchView();
+//                fab.setVisibility(View.GONE);
+//                mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24px);
+//                mToolbar.setBackgroundColor(Color.WHITE);
+//                if (android.os.Build.VERSION.SDK_INT >= 21) {
+//                    Window window = this.getWindow();
+////                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+////                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+//                    window.setStatusBarColor(this.getResources().getColor(R.color.divider));
+//                }
+//
+//                /** add focus on search view */
+//                mSearchView.onActionViewExpanded();
+//                mSearchViewEditText.requestFocus();
+//                mIsSearshActive = true;
+//                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//                imm.showSoftInput(mSearchView, InputMethodManager.SHOW_IMPLICIT);
+//                if (mActionBarMenu != null) {
+//                    mActionBarMenu.setGroupVisible(R.id.search_block_visible, true);
+//                    mActionBarMenu.setGroupVisible(R.id.main_menu, false);
+//                    mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, false);
+//                }
                 break;
             /** Search cancel icon click */
-            case R.id.cancel_search_button:
+            case android.R.id.home:
                 onBackPressed();
                 break;
             default:
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void openSearchView() {
+        fab.setVisibility(View.GONE);
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24px);
+        mToolbar.setBackgroundColor(Color.WHITE);
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
+            Window window = this.getWindow();
+            window.setStatusBarColor(this.getResources().getColor(R.color.divider));
+        }
+
+        /** add focus on search view */
+        mSearchView.onActionViewExpanded();
+        mSearchViewEditText.requestFocus();
+//        mIsSearshActive = true;
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(mSearchView, InputMethodManager.SHOW_IMPLICIT);
+        if (mActionBarMenu != null) {
+            mActionBarMenu.setGroupVisible(R.id.search_block_visible, true);
+            mActionBarMenu.setGroupVisible(R.id.main_menu, false);
+            mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, false);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        /** hide search */
+        if (mIsSearshActive) {
+            /** hide up button on toolbar */
+            mToolbar.setNavigationIcon(null);
+            /** hide keyboard */
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(mSearchViewEditText.getWindowToken(), 0);
+            mSearchViewEditText.setText("");
+            mSearchText = "";
+            mIsSearshActive = false;
+            /** set primary color toolbar and statusbar*/
+            TypedValue typedValue = new TypedValue();
+            getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
+            int color = typedValue.data;
+            mToolbar.setBackgroundColor(color);
+            if (android.os.Build.VERSION.SDK_INT >= 21) {
+                Window window = this.getWindow();
+                window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimaryDark));
+            }
+            hideMenuActionBar();
+            return;
+        }
+        super.onBackPressed();
     }
 
     private void hideMenuActionBar() {
@@ -395,22 +485,6 @@ public class NoteListActivity extends AppCompatActivity {
         Parcelable parcelable = mNoteRecyclerView.getLayoutManager().onSaveInstanceState();
         mNoteRecyclerView.setAdapter(mNoteAdapter);
         mNoteRecyclerView.getLayoutManager().onRestoreInstanceState(parcelable);
-    }
-
-    @Override
-    public void onBackPressed() {
-        /** hide search */
-        if(mIsSearshActive){
-            /** keyboard hide */
-            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(mSearchViewEditText.getWindowToken(), 0);
-            mSearchViewEditText.setText("");
-            mSearchText = "";
-            mIsSearshActive = false;
-            hideMenuActionBar();
-            return;
-        }
-        super.onBackPressed();
     }
 
     @Override

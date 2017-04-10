@@ -5,16 +5,16 @@
         android:id="@+id/menu_delete_actionbar"
         android:visible="false">
         <item
+            android:id="@+id/menu_delete_cancel"
+            android:title="@string/menu_delete_cancel"
+            app:showAsAction="always|withText">
+        </item>
+        <item
             android:id="@+id/menu_delete_all"
             android:title="@string/menu_delete_all"
             app:showAsAction="always|withText">
         </item>
-        <item
-            android:id="@+id/menu_delete_cancel"
-            android:title="@string/menu_delete_cancel"
-            app:showAsAction="always|withText"
-            >
-        </item>
+
     </group>
     <!--<group-->
     <!--android:id="@+id/menu_search">-->
@@ -29,21 +29,23 @@
     <group
         android:id="@+id/search_block_visible"
         android:visible="false">
-        <item
-            android:id="@+id/cancel_search_button"
-            android:icon="@drawable/ic_arrow_back_black_24px"
-            android:title="@string/search_window"
-            app:showAsAction="ifRoom">
-        </item>
+        <!--<item-->
+        <!--android:id="@+id/cancel_search_button"-->
+        <!--android:icon="@drawable/ic_arrow_back_black_24px"-->
+        <!--android:title="@string/search_window"-->
+        <!--app:showAsAction="ifRoom">-->
+        <!--</item>-->
         <item
             android:id="@+id/search_view"
             android:title="@string/search_tint_toolbar"
-            app:actionViewClass="android.support.v7.widget.SearchView"
+            app:actionLayout="@layout/searchview_layout"
             app:showAsAction="always"
             />
     </group>
 
-    <group android:id="@+id/main_menu">
+    <group
+        android:id="@+id/main_menu"
+        android:visible="true">
         <item
             android:id="@+id/search_note"
             android:icon="@drawable/search"
@@ -67,12 +69,12 @@
             </menu>
         </item>
         <item
-            android:id="@+id/menu_settings"
-            android:title="@string/menu_setting">
-        </item>
-        <item
             android:id="@+id/menu_delete"
             android:title="@string/menu_delete">
+        </item>
+        <item
+            android:id="@+id/menu_settings"
+            android:title="@string/menu_setting">
         </item>
     </group>
 </menu>

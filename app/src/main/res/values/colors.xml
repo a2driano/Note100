@@ -17,6 +17,7 @@
     <color name="secondary_text">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
+    <color name="main_background">#e6e6e6</color>
 
     <!--Color for note widget-->
     <color name="YELLOW">#ffeea8</color>

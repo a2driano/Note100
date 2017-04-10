@@ -10,9 +10,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -44,6 +46,13 @@ public class NoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        /** set primary color toolbar */
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP){
+            TypedValue typedValue = new TypedValue();
+            getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
+            int color = typedValue.data;
+            mToolbar.setBackgroundColor(color);
+        }
         if (mToolbar != null) {
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -97,6 +106,9 @@ public class NoteActivity extends AppCompatActivity {
      */
     @Override
     public void onBackPressed() {
+//        /** hide keyboard */
+//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//        imm.hideSoftInputFromWindow(mTextNote.getWindowToken(), 0);
         Intent intent = new Intent();
         mNoteStore = NoteStore.get(this);
         if (isNew & (mTextNote.getText().length() != 0)) {
@@ -116,11 +128,20 @@ public class NoteActivity extends AppCompatActivity {
             mResultForIntent = RESULT_CANCELED;
         }
         isNew = false;
+
         setResult(mResultForIntent, intent);
         super.onBackPressed();
     }
 
-//    /**
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//        /** hide keyboard */
+//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//        imm.hideSoftInputFromWindow(mTextNote.getWindowToken(), 0);
+//    }
+
+    //    /**
 //     * When we return to NoteListActivity, instance of NoteModel add or update in to DB
 //     */
 //    @Override
@@ -131,6 +152,14 @@ public class NoteActivity extends AppCompatActivity {
 //        mCheckColor = mNoteModel.getColor();
 //        mNextStep = true;
 //
+//    }
+
+//    @Override
+//    protected void onStop() {
+//        /** hide keyboard */
+//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+//        imm.hideSoftInputFromWindow(mTextNote.getWindowToken(), 0);
+//        super.onStop();
 //    }
 
     /**
