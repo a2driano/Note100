@@ -11,9 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.util.TypedValue;
-import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -31,7 +29,7 @@ import static com.a2driano.note100.util.UtilNote.getReadableModifiedDateForNoteA
 
 public class NoteActivity extends AppCompatActivity {
     private NoteModel mNoteModel;
-    private EditText mTextNote;
+    private EditText mNoteText;
     private TextView mDateText;
     private NoteStore mNoteStore;
     private boolean isNew = false;
@@ -47,7 +45,7 @@ public class NoteActivity extends AppCompatActivity {
         setContentView(R.layout.activity_note);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         /** set primary color toolbar */
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP){
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
             TypedValue typedValue = new TypedValue();
             getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
             int color = typedValue.data;
@@ -62,7 +60,7 @@ public class NoteActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mDateText = (TextView) findViewById(R.id.text_date_note_activity);
-        mTextNote = (EditText) findViewById(R.id.noteText);
+        mNoteText = (EditText) findViewById(R.id.noteText);
 
         /** Get data from intent */
         createNoteView();
@@ -82,9 +80,13 @@ public class NoteActivity extends AppCompatActivity {
             mNoteModel = NoteStore.get(this)
                     .getNote(UUID.fromString(intent.getStringExtra(EXTRA_MESSAGE_UUID)));
             //add info to view
+            mNoteText.setText(mNoteModel.getText());
             mDateText.setText(getReadableModifiedDateForNoteActivity(mNoteModel.getDate()));
-            mTextNote.setText(mNoteModel.getText());
-            mTextNote.setSelection(mTextNote.getText().length());
+//            mNoteText.setSelection(mNoteText.getText().length());
+
+            //hide keyboard if note is create, for user first can just read
+            mDateText.setFocusableInTouchMode(true);
+            mDateText.requestFocus();
 //            isNew = false;
         }
         mCheckColor = mNoteModel.getColor();
@@ -108,19 +110,19 @@ public class NoteActivity extends AppCompatActivity {
     public void onBackPressed() {
 //        /** hide keyboard */
 //        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//        imm.hideSoftInputFromWindow(mTextNote.getWindowToken(), 0);
+//        imm.hideSoftInputFromWindow(mNoteText.getWindowToken(), 0);
         Intent intent = new Intent();
         mNoteStore = NoteStore.get(this);
-        if (isNew & (mTextNote.getText().length() != 0)) {
+        if (isNew & (mNoteText.getText().length() != 0)) {
             //if note is new and user create text
-            mNoteModel.setText(mTextNote.getText().toString());
+            mNoteModel.setText(mNoteText.getText().toString());
             mNoteStore.addNote(mNoteModel);
             mResultForIntent = RESULT_OK;
         } else if (!isNew
-                & (!mNoteModel.getText().equals(mTextNote.getText().toString())
+                & (!mNoteModel.getText().equals(mNoteText.getText().toString())
                 || !mCheckColor.equals(mNoteModel.getColor()))) {
             //if note is exist
-            mNoteModel.setText(mTextNote.getText().toString());
+            mNoteModel.setText(mNoteText.getText().toString());
             mNoteModel.setColor(mCheckColor);
             mNoteStore.updateNote(mNoteModel);
             mResultForIntent = RESULT_OK;
@@ -138,7 +140,7 @@ public class NoteActivity extends AppCompatActivity {
 //        super.onPause();
 //        /** hide keyboard */
 //        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//        imm.hideSoftInputFromWindow(mTextNote.getWindowToken(), 0);
+//        imm.hideSoftInputFromWindow(mNoteText.getWindowToken(), 0);
 //    }
 
     //    /**
@@ -148,7 +150,7 @@ public class NoteActivity extends AppCompatActivity {
 //    protected void onStop() {
 //        super.onStop();
 //        /** for onResume method call */
-//        mTextNote.setText(mNoteModel.getText());
+//        mNoteText.setText(mNoteModel.getText());
 //        mCheckColor = mNoteModel.getColor();
 //        mNextStep = true;
 //
@@ -158,7 +160,7 @@ public class NoteActivity extends AppCompatActivity {
 //    protected void onStop() {
 //        /** hide keyboard */
 //        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//        imm.hideSoftInputFromWindow(mTextNote.getWindowToken(), 0);
+//        imm.hideSoftInputFromWindow(mNoteText.getWindowToken(), 0);
 //        super.onStop();
 //    }
 

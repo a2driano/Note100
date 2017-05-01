@@ -14,7 +14,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -27,7 +26,6 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -40,6 +38,7 @@ import com.a2driano.note100.data.NoteDbSchema;
 import com.a2driano.note100.data.NoteStore;
 import com.a2driano.note100.model.NoteModel;
 import com.a2driano.note100.util.CommonToast;
+import com.a2driano.note100.util.CreateDialogUtil;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -52,13 +51,17 @@ import static com.a2driano.note100.util.UtilNote.getReadableModifiedDate;
 
 public class NoteListActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE_UUID = "com.a2driano.note100.activities.UUID";
+//    public static boolean mDialogPositive = false;
     //    public static final String EXTRA_MESSAGE_SEARCH_IS_ACTIVE = "com.a2driano.note100.activities.Search";
     //    public final static String EXTRA_MESSAGE_COLOR = "com.a2driano.note100.activities.COLOR";
+
+    public static NoteListActivity mNoteListActivity;
     private RecyclerView mNoteRecyclerView;
     private NoteAdapter mNoteAdapter;
     private FloatingActionButton fab;
     private Toolbar mToolbar;
     private List<NoteModel> mNotes;
+    private HashMap<Integer, UUID> mHashDeleteNotes = null;
     private NoteStore mNoteStore;
     private SharedPreferences mPreferences;
     private String sortingVariable;
@@ -77,6 +80,7 @@ public class NoteListActivity extends AppCompatActivity {
      * Save instance variable
      */
     private final String MENU_DELETE_IS_ACTIVE = "active";
+    private final String MENU_DELETE_ITEMS = "selected items";
     private final String SEARCH_IS_ACTIVE = "search is active process";
     private final String SEARCH_LETTERS = "searching letter in EditText";
 
@@ -104,6 +108,7 @@ public class NoteListActivity extends AppCompatActivity {
         mNoteRecyclerView = (RecyclerView) findViewById(R.id.recycle_view);
         mNoteRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mNoteRecyclerView.setHasFixedSize(true);
+        mNoteRecyclerView.setItemViewCacheSize(30);
         registerForContextMenu(mNoteRecyclerView);
 
         mDeleteAll = false;
@@ -111,7 +116,9 @@ public class NoteListActivity extends AppCompatActivity {
 
         if (savedInstanceState != null) {
             if (mMenuDeleteAllVisible = savedInstanceState.getBoolean(MENU_DELETE_IS_ACTIVE)) {
-
+                mDeleteAll = true;
+                if (savedInstanceState.getSerializable(MENU_DELETE_ITEMS) != null)
+                    mHashDeleteNotes = (HashMap<Integer, UUID>) savedInstanceState.getSerializable(MENU_DELETE_ITEMS);
             } else if (mIsSearshActive = savedInstanceState.getBoolean(SEARCH_IS_ACTIVE)) {
                 mSearchText = savedInstanceState.getString(SEARCH_LETTERS);
             }
@@ -149,6 +156,8 @@ public class NoteListActivity extends AppCompatActivity {
         savedInstanceState.putBoolean(MENU_DELETE_IS_ACTIVE, mMenuDeleteAllVisible);
         savedInstanceState.putBoolean(SEARCH_IS_ACTIVE, mIsSearshActive);
         savedInstanceState.putString(SEARCH_LETTERS, mSearchText);
+        if (mNoteAdapter.mNoteHolderListForDelete.size() != 0)
+            savedInstanceState.putSerializable(MENU_DELETE_ITEMS, mNoteAdapter.mNoteHolderListForDelete);
 
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -179,11 +188,15 @@ public class NoteListActivity extends AppCompatActivity {
         sortNoteList(sortingVariable, reverseVariable);
         if (mNoteAdapter == null) {
             mNoteAdapter = new NoteAdapter(mNotes);
+            if (mHashDeleteNotes != null) {
+                mNoteAdapter.mNoteHolderListForDelete = mHashDeleteNotes;
+            }
             mNoteRecyclerView.setAdapter(mNoteAdapter);
         } else {
             mNoteAdapter.setNotes(mNotes);
             mNoteAdapter.notifyDataSetChanged();
         }
+
     }
 
     /**
@@ -245,7 +258,6 @@ public class NoteListActivity extends AppCompatActivity {
             updateUI();
     }
 
-
     /**
      * Create menu
      */
@@ -255,7 +267,21 @@ public class NoteListActivity extends AppCompatActivity {
         inflater.inflate(R.menu.menu, menu);
         this.mActionBarMenu = menu;
 
-//        mSearchView = (SearchView) findViewById(R.id.search_view);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        if (mDeleteAll == true) {
+            /** Show the delete menu option */
+            mActionBarMenu.setGroupVisible(R.id.main_menu, false);
+            mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, true);
+            mActionBarMenu.setGroupVisible(R.id.search_block_visible, false);
+            fab.setVisibility(View.GONE);
+        } else {
+            menu.setGroupVisible(R.id.menu_delete_actionbar, mMenuDeleteAllVisible);
+        }
+
         mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search_view));
         mSearchView.setMaxWidth(Integer.MAX_VALUE);
         mSearchViewEditText = ((EditText) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
@@ -269,15 +295,11 @@ public class NoteListActivity extends AppCompatActivity {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                        Instrumentation inst = new Instrumentation();
-                            inst.sendKeyDownUpSync(KeyEvent.KEYCODE_ENTER);
+                    Instrumentation inst = new Instrumentation();
+                    inst.sendKeyDownUpSync(KeyEvent.KEYCODE_ENTER);
                 }
             }).start();
-
         }
-
-//        mSearchViewEditText.setTextColor(Color.BLACK);
-//        mSearchView.setBackgroundColor(Color.WHITE);
         /** Search logic */
         mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -296,13 +318,6 @@ public class NoteListActivity extends AppCompatActivity {
                 updateUI(query);
             }
         });
-        return true;
-    }
-
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        menu.setGroupVisible(R.id.menu_delete_actionbar, mMenuDeleteAllVisible);
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -375,9 +390,8 @@ public class NoteListActivity extends AppCompatActivity {
 
                     NoteModel noteModel = mNoteStore.getNote(uuid);
                     mNoteStore.deleteNote(noteModel);
-//                    mNoteAdapter.mNoteModelList.remove(position);
-//                    mNoteAdapter.notifyItemRemoved(position);
                 }
+                mHashDeleteNotes = null;
                 updateUI();
 //                onResume();
 //                fab.setVisibility(View.VISIBLE);
@@ -385,6 +399,7 @@ public class NoteListActivity extends AppCompatActivity {
                 break;
             /** Cancel delete menu */
             case R.id.menu_delete_cancel:
+                mHashDeleteNotes = null;
                 hideMenuActionBar();
                 mNoteAdapter.notifyDataSetChanged();
                 break;
@@ -392,27 +407,6 @@ public class NoteListActivity extends AppCompatActivity {
             case R.id.search_note:
                 mIsSearshActive = true;
                 openSearchView();
-//                fab.setVisibility(View.GONE);
-//                mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24px);
-//                mToolbar.setBackgroundColor(Color.WHITE);
-//                if (android.os.Build.VERSION.SDK_INT >= 21) {
-//                    Window window = this.getWindow();
-////                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-////                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-//                    window.setStatusBarColor(this.getResources().getColor(R.color.divider));
-//                }
-//
-//                /** add focus on search view */
-//                mSearchView.onActionViewExpanded();
-//                mSearchViewEditText.requestFocus();
-//                mIsSearshActive = true;
-//                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//                imm.showSoftInput(mSearchView, InputMethodManager.SHOW_IMPLICIT);
-//                if (mActionBarMenu != null) {
-//                    mActionBarMenu.setGroupVisible(R.id.search_block_visible, true);
-//                    mActionBarMenu.setGroupVisible(R.id.main_menu, false);
-//                    mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, false);
-//                }
                 break;
             /** Search cancel icon click */
             case android.R.id.home:
@@ -428,9 +422,11 @@ public class NoteListActivity extends AppCompatActivity {
         fab.setVisibility(View.GONE);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24px);
         mToolbar.setBackgroundColor(Color.WHITE);
+
         if (android.os.Build.VERSION.SDK_INT >= 21) {
             Window window = this.getWindow();
             window.setStatusBarColor(this.getResources().getColor(R.color.divider));
+            mToolbar.setElevation(12.0f);
         }
 
         /** add focus on search view */
@@ -466,6 +462,7 @@ public class NoteListActivity extends AppCompatActivity {
             if (android.os.Build.VERSION.SDK_INT >= 21) {
                 Window window = this.getWindow();
                 window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimaryDark));
+                mToolbar.setElevation(4.0f);
             }
             hideMenuActionBar();
             return;
@@ -529,9 +526,9 @@ public class NoteListActivity extends AppCompatActivity {
                 break;
             /** Delete note from app; */
             case R.id.context_menu_delete:
-                mNoteStore.deleteNote(noteModel);
-                mNoteAdapter.mNoteModelList.remove(position);
-                mNoteAdapter.notifyItemRemoved(position);
+                CreateDialogUtil.noteModel = noteModel;
+                CreateDialogUtil.position = position;
+                new CreateDialogUtil().show(getSupportFragmentManager(), "delete note");
                 return super.onContextItemSelected(item);
         }
         /** Change color action */
@@ -541,6 +538,13 @@ public class NoteListActivity extends AppCompatActivity {
         return super.onContextItemSelected(item);
     }
 
+    /** Delete note after dialog  */
+    public void deleteNote(NoteModel noteModel, int position) {
+        mNoteStore.deleteNote(noteModel);
+        mNoteAdapter.mNoteModelList.remove(position);
+        mNoteAdapter.notifyItemRemoved(position);
+    }
+
     private class NoteHolder extends RecyclerView.ViewHolder implements
             View.OnClickListener, View.OnCreateContextMenuListener {
 
@@ -548,7 +552,6 @@ public class NoteListActivity extends AppCompatActivity {
         private TextView mNoteDate;
         private TextView mNoteUuid;
         private TextView mNoteColor;
-
         private NoteModel mNoteModel;
         private LinearLayout mLinearLayout;
         private LinearLayout mLinearLayoutInsideNote;
@@ -647,15 +650,21 @@ public class NoteListActivity extends AppCompatActivity {
                 String uuidString = view.getText().toString();
                 final UUID uuid = UUID.fromString(uuidString);
                 holder.itemView.findViewById(R.id.delete_note_host).setVisibility(View.VISIBLE);
-
                 CheckBox checkBox = (CheckBox) holder.itemView.findViewById(R.id.checkBox_for_delete);
+
+
+                if ((mHashDeleteNotes != null) && (mHashDeleteNotes.get(position) != null)) {
+                    checkBox.setChecked(true);
+                }
+
                 checkBox.setOnCheckedChangeListener(
                         new CompoundButton.OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                                 if (isChecked) {
                                     mNoteHolderListForDelete.put(position, uuid);
-                                }
+                                } else
+                                    mNoteHolderListForDelete.remove(position);
                             }
                         }
                 );

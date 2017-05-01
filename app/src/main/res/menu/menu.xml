@@ -5,15 +5,16 @@
         android:id="@+id/menu_delete_actionbar"
         android:visible="false">
         <item
-            android:id="@+id/menu_delete_cancel"
-            android:title="@string/menu_delete_cancel"
-            app:showAsAction="always|withText">
-        </item>
-        <item
             android:id="@+id/menu_delete_all"
             android:title="@string/menu_delete_all"
             app:showAsAction="always|withText">
         </item>
+        <item
+            android:id="@+id/menu_delete_cancel"
+            android:title="@string/menu_delete_cancel"
+            app:showAsAction="always|withText">
+        </item>
+
 
     </group>
     <!--<group-->

@@ -21,4 +21,7 @@
     <string name="menu_search">Search</string>
     <string name="search_window">Search</string>
     <string name="search_tint_toolbar">Search</string>
+    <string name="dialog_context_delete_note">Delete note?</string>
+    <string name="dialog_context_cancel_button_text">Cancel</string>
+    <string name="dialog_context_delete_button_text">Delete</string>
 </resources>
