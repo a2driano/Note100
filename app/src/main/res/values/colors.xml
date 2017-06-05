@@ -18,11 +18,21 @@
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
     <color name="main_background">#e6e6e6</color>
+    <color name="main_background_dark">#c8c8c8</color>
 
     <!--Color for note widget-->
-    <color name="YELLOW">#ffeea8</color>
-    <color name="RED">#ffb1b1</color>
-    <color name="GREEN">#bbffa9</color>
-    <color name="BLUE">#8ff4ff</color>
-    <color name="GREY">#c4c4c4</color>
+    <color name="YELLOW">#edc314</color>
+    <color name="RED">#fc1b1b</color>
+    <color name="GREEN">#3aca13</color>
+    <color name="BLUE">#1078e1</color>
+    <color name="GREY">#6c6c6c</color>
+    <color name="WHITE">#fff</color>
+    <color name="TRANSPARENT">#00ffffff</color>
+
+    <!--<color name="YELLOW">#ffeea8</color>-->
+    <!--<color name="RED">#ffb1b1</color>-->
+    <!--<color name="GREEN">#bbffa9</color>-->
+    <!--<color name="BLUE">#8ff4ff</color>-->
+    <!--<color name="GREY">#c4c4c4</color>-->
+    <!--<color name="WHITE">#fff</color>-->
 </resources>

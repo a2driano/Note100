@@ -8,10 +8,12 @@ import android.database.sqlite.SQLiteDatabase;
 import com.a2driano.note100.model.NoteModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-import static com.a2driano.note100.data.NoteDbSchema.*;
+import static com.a2driano.note100.data.NoteDbSchema.NoteTable;
 
 /**
  * Created by Andrii Papai on 20.12.2016.
@@ -51,7 +53,9 @@ public class NoteStore {
         return mNoteModelList;
     }
 
-    /** Search func */
+    /**
+     * Search func
+     */
     public List<NoteModel> getNotes(String searchText) {
         mNoteModelList = new ArrayList<>();
         NoteCursorWrapper cursor = queryNotes(searchText);
@@ -103,6 +107,25 @@ public class NoteStore {
         mDatabase.delete(NoteTable.NAME,
                 NoteTable.Cols.UUID + " = ? ",
                 new String[]{uuidString});
+    }
+
+    public void deleteAllSelectedNotes(HashMap<Integer, UUID> hashMapForDelete) {
+//        String[] uuidString = new String[hashMapForDelete.size()];
+//        int i = 0;
+        for (Map.Entry<Integer, UUID> entry : hashMapForDelete.entrySet()) {
+            UUID uuid = entry.getValue();
+//            uuidString[i] = uuid.toString();
+            mDatabase.delete(NoteTable.NAME,
+                    NoteTable.Cols.UUID + " = ? ",
+                    new String[]{uuid.toString()});
+        }
+//        mDatabase.execSQL("DELETE FROM " + NoteTable.NAME
+//                + " WHERE " + NoteTable.Cols.UUID + " (IN SELECT * FROM "
+//                + NoteTable.NAME + " WHERE " + NoteTable.Cols.UUID + " = ?) ", uuidString);
+
+//        mDatabase.execSQL("DELETE FROM " + NoteTable.NAME + " WHERE " + NoteTable.Cols.UUID
+//                + " IN (SELECT " + NoteTable.Cols.UUID + " FROM  " + uuidString + " )");
+//        mDatabase.execSQL("DELETE FROM " + NoteTable.NAME + " where " + NoteTable.Cols.UUID + " = " + uuidString + ";");
     }
 
     private static ContentValues getContentValues(NoteModel noteModel) {

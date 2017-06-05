@@ -31,6 +31,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.a2driano.note100.R;
@@ -44,9 +45,16 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
+import static com.a2driano.note100.util.AnimationUtil.hideElementsMenu;
+import static com.a2driano.note100.util.AnimationUtil.hideFab;
+import static com.a2driano.note100.util.AnimationUtil.visibleAnimationCheckBox;
+import static com.a2driano.note100.util.AnimationUtil.visibleAnimationCheckBoxRevers;
+import static com.a2driano.note100.util.AnimationUtil.visibleElementsMenu;
+import static com.a2driano.note100.util.AnimationUtil.visibleFab;
+import static com.a2driano.note100.util.AnimationUtil.visibleFabOffset;
+import static com.a2driano.note100.util.CreateDialogUtil.hashMapDelete;
 import static com.a2driano.note100.util.UtilNote.getReadableModifiedDate;
 
 public class NoteListActivity extends AppCompatActivity {
@@ -58,22 +66,26 @@ public class NoteListActivity extends AppCompatActivity {
     public static NoteListActivity mNoteListActivity;
     private RecyclerView mNoteRecyclerView;
     private NoteAdapter mNoteAdapter;
-    private FloatingActionButton fab;
+    public static FloatingActionButton fab;
     private Toolbar mToolbar;
     private List<NoteModel> mNotes;
     private HashMap<Integer, UUID> mHashDeleteNotes = null;
     private NoteStore mNoteStore;
     private SharedPreferences mPreferences;
     private String sortingVariable;
+
     private boolean reverseVariable;
-    private boolean mDeleteAll;
+    private boolean mDeleteAllCheckBoxVisible;
     private boolean mMenuDeleteAllVisible;
     private boolean mIsSearshActive;
+    public static boolean sRefreshData;
+
     private String mSearchText;
     private SearchView mSearchView;
     private EditText mSearchViewEditText;
     private LinearLayout mSearchLayout;
     private Menu mActionBarMenu;
+
     static final int NOTE_START_ACTIVITY = 1;
 
     /**
@@ -83,6 +95,7 @@ public class NoteListActivity extends AppCompatActivity {
     private final String MENU_DELETE_ITEMS = "selected items";
     private final String SEARCH_IS_ACTIVE = "search is active process";
     private final String SEARCH_LETTERS = "searching letter in EditText";
+    private boolean mReversAnimationCheckBox;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +113,7 @@ public class NoteListActivity extends AppCompatActivity {
             }
         });
 
+
         mIsSearshActive = false;
         mSearchText = "";
 
@@ -109,14 +123,31 @@ public class NoteListActivity extends AppCompatActivity {
         mNoteRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mNoteRecyclerView.setHasFixedSize(true);
         mNoteRecyclerView.setItemViewCacheSize(30);
+
+        mNoteRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (fab.getVisibility() == View.VISIBLE && dy > 0) {
+                    hideFab(fab, getBaseContext());
+                    fab.setVisibility(View.GONE);
+//                    fab.hide();
+                } else if (fab.getVisibility() == View.GONE && dy < 0 && !mMenuDeleteAllVisible) {
+                    visibleFab(fab, getBaseContext());
+                    fab.setVisibility(View.VISIBLE);
+//                    fab.show();
+                }
+                super.onScrolled(recyclerView, dx, dy);
+            }
+        });
         registerForContextMenu(mNoteRecyclerView);
 
-        mDeleteAll = false;
+        mDeleteAllCheckBoxVisible = false;
         mMenuDeleteAllVisible = false;
+        sRefreshData = false;
 
         if (savedInstanceState != null) {
             if (mMenuDeleteAllVisible = savedInstanceState.getBoolean(MENU_DELETE_IS_ACTIVE)) {
-                mDeleteAll = true;
+                mDeleteAllCheckBoxVisible = true;
                 if (savedInstanceState.getSerializable(MENU_DELETE_ITEMS) != null)
                     mHashDeleteNotes = (HashMap<Integer, UUID>) savedInstanceState.getSerializable(MENU_DELETE_ITEMS);
             } else if (mIsSearshActive = savedInstanceState.getBoolean(SEARCH_IS_ACTIVE)) {
@@ -164,13 +195,53 @@ public class NoteListActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        if (sRefreshData) {
+            updateUI();
+            sRefreshData = false;
+        }
+        if (!mDeleteAllCheckBoxVisible) {
+            visibleFabOffset(fab, this);
+        }
         super.onResume();
-//        updateUI();
     }
 
     /**
      * For refresh activity
      */
+//    private void updateUI() {
+//        new AsyncTask<Void, Void, Void>() {
+//            @Override
+//            protected Void doInBackground(final Void... params) {
+//                mNoteStore = NoteStore.get(NoteListActivity.this);
+//                mNotes = mNoteStore.getNotes();
+//                return null;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(final Void result) {
+//                sortListNoteForAdapter();
+//            }
+//        }.execute();
+//    }
+//
+//    private void updateUI(final String text) {
+//        mSearchText = text;
+//
+//        new AsyncTask<Void, Void, Void>() {
+//            @Override
+//            protected Void doInBackground(final Void... params) {
+//                mNoteStore = NoteStore.get(NoteListActivity.this);
+//                mNotes = mNoteStore.getNotes(text);
+//                sortListNoteForAdapter();
+//                return null;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(final Void result) {
+//                sortListNoteForAdapter();
+//            }
+//        }.execute();
+//    }
     private void updateUI() {
         mNoteStore = NoteStore.get(NoteListActivity.this);
         mNotes = mNoteStore.getNotes();
@@ -272,19 +343,21 @@ public class NoteListActivity extends AppCompatActivity {
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-        if (mDeleteAll == true) {
+        if (mDeleteAllCheckBoxVisible) {
             /** Show the delete menu option */
-            mActionBarMenu.setGroupVisible(R.id.main_menu, false);
-            mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, true);
-            mActionBarMenu.setGroupVisible(R.id.search_block_visible, false);
+            menuAnimationDeleteItemVisible();
             fab.setVisibility(View.GONE);
         } else {
-            menu.setGroupVisible(R.id.menu_delete_actionbar, mMenuDeleteAllVisible);
+//            menu.setGroupVisible(R.id.menu_delete_actionbar, mMenuDeleteAllVisible);
+            menuAnimationDeleteItemHide();
         }
 
         mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search_view));
         mSearchView.setMaxWidth(Integer.MAX_VALUE);
         mSearchViewEditText = ((EditText) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
+
+        View search = mToolbar.getMenu().findItem(R.id.search_note).getActionView();
+        setOnclickListenerForMenuItemAfterAnimation(search, R.id.search_note);
 
         /** Start search logic from bundle*/
         if (mIsSearshActive) {
@@ -320,6 +393,33 @@ public class NoteListActivity extends AppCompatActivity {
         });
 
         return super.onPrepareOptionsMenu(menu);
+    }
+
+    private void menuAnimationDeleteItemVisible() {
+        //hide element animation
+        View search = mToolbar.getMenu().findItem(R.id.search_note).getActionView();
+        hideElementsMenu(search, this);
+        //visible elements animation
+        View delete = mToolbar.getMenu().findItem(R.id.menu_delete_all).getActionView();
+        setOnclickListenerForMenuItemAfterAnimation(delete, R.id.menu_delete_all);
+        View cancel = mToolbar.getMenu().findItem(R.id.menu_delete_cancel).getActionView();
+        setOnclickListenerForMenuItemAfterAnimation(cancel, R.id.menu_delete_cancel);
+        visibleElementsMenu(delete, this);
+        visibleElementsMenu(cancel, this);
+        //set group menu visible
+        mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, true);
+        mActionBarMenu.setGroupVisible(R.id.main_menu, false);
+    }
+
+    private void menuAnimationDeleteItemHide() {
+        //hide elements animation
+        View delete = mToolbar.getMenu().findItem(R.id.menu_delete_all).getActionView();
+        View cancel = mToolbar.getMenu().findItem(R.id.menu_delete_cancel).getActionView();
+        hideElementsMenu(delete, this);
+        hideElementsMenu(cancel, this);
+        //visible element animation
+        View search = mToolbar.getMenu().findItem(R.id.search_note).getActionView();
+        visibleElementsMenu(search, this);
     }
 
     /**
@@ -366,46 +466,55 @@ public class NoteListActivity extends AppCompatActivity {
                 updateUI();
                 CommonToast.showToast(this, messageToast);
                 break;
-            case R.id.menu_settings:
-                break;
+//            case R.id.menu_settings:
+//                break;
             /** Delete menu option click*/
             case R.id.menu_delete:
-                mDeleteAll = true;
+                mDeleteAllCheckBoxVisible = true;
                 mMenuDeleteAllVisible = true;
+                mReversAnimationCheckBox = false;
                 if (mActionBarMenu != null) {
-                    mActionBarMenu.setGroupVisible(R.id.main_menu, false);
-                    mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, true);
-                    mActionBarMenu.setGroupVisible(R.id.search_block_visible, false);
+                    mActionBarMenu.close();
+                    menuAnimationDeleteItemVisible();
                 }
                 updateUI();
-//                invalidateOptionsMenu();
-                fab.setVisibility(View.GONE);
+                //if fab is not visible disable this code
+                if (fab.getVisibility() == View.VISIBLE) {
+                    hideFab(fab, this);
+                    fab.setVisibility(View.GONE);
+                }
                 break;
             /** Delete all option click*/
             case R.id.menu_delete_all:
                 HashMap<Integer, UUID> hashMapForDelete = mNoteAdapter.mNoteHolderListForDelete;
-                for (Map.Entry<Integer, UUID> entry : hashMapForDelete.entrySet()) {
-                    int position = entry.getKey();
-                    UUID uuid = entry.getValue();
-
-                    NoteModel noteModel = mNoteStore.getNote(uuid);
-                    mNoteStore.deleteNote(noteModel);
+                hashMapDelete = hashMapForDelete;
+//                mReversAnimationCheckBox = true;
+                //set dialog message text
+                CreateDialogUtil.setTextMessage = getString(R.string.dialog_context_delete_notes);
+                //if user don`t select elements for delete and click "delete", app not show dialog
+                if (!hashMapDelete.isEmpty())
+                    new CreateDialogUtil().show(getSupportFragmentManager(), "delete notes");
+                else {
+                    MenuItem menuItem = mActionBarMenu.findItem(R.id.menu_delete_cancel);
+                    onOptionsItemSelected(menuItem);
                 }
-                mHashDeleteNotes = null;
-                updateUI();
-//                onResume();
-//                fab.setVisibility(View.VISIBLE);
-                hideMenuActionBar();
                 break;
             /** Cancel delete menu */
             case R.id.menu_delete_cancel:
-                mHashDeleteNotes = null;
+//                lastVisibleItemForCloseCheckboxAnimation
+                LinearLayoutManager linearLayoutManager = (LinearLayoutManager) mNoteRecyclerView.getLayoutManager();
+                mNoteAdapter.lastVisibleItemForCloseCheckboxAnimation =
+                        linearLayoutManager.findLastVisibleItemPosition();
+                mReversAnimationCheckBox = true;
                 hideMenuActionBar();
-                mNoteAdapter.notifyDataSetChanged();
+                mHashDeleteNotes = null;
+                updateUI();
+//                mNoteAdapter.notifyDataSetChanged();
                 break;
             /** Search icon click */
             case R.id.search_note:
                 mIsSearshActive = true;
+                hideFab(fab, this);
                 openSearchView();
                 break;
             /** Search cancel icon click */
@@ -416,6 +525,20 @@ public class NoteListActivity extends AppCompatActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * add clicklistener for item menu
+     * (because action view from item not detect click)
+     */
+    private void setOnclickListenerForMenuItemAfterAnimation(View view, final int id) {
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                MenuItem menuItem = mActionBarMenu.findItem(id);
+                onOptionsItemSelected(menuItem);
+            }
+        });
     }
 
     private void openSearchView() {
@@ -466,14 +589,21 @@ public class NoteListActivity extends AppCompatActivity {
             }
             hideMenuActionBar();
             return;
+            //when user click back button in active delete menu action
+        } else if (mDeleteAllCheckBoxVisible) {
+            MenuItem menuItem = mActionBarMenu.findItem(R.id.menu_delete_cancel);
+            onOptionsItemSelected(menuItem);
+            return;
         }
         super.onBackPressed();
     }
 
     private void hideMenuActionBar() {
-        mDeleteAll = false;
+        mDeleteAllCheckBoxVisible = false;
         mMenuDeleteAllVisible = false;
         invalidateOptionsMenu();
+        menuAnimationDeleteItemHide();
+        visibleFab(fab, this);
         fab.setVisibility(View.VISIBLE);
 
         /** Remember top position on screen
@@ -496,7 +626,7 @@ public class NoteListActivity extends AppCompatActivity {
         }
         NoteHolder holder = (NoteHolder) mNoteRecyclerView.findViewHolderForLayoutPosition(position);
 
-        /** Get NoteStore instance and current NoteModel object */
+        /** Get NoteStoreAsync instance and current NoteModel object */
         mNoteStore = NoteStore.get(NoteListActivity.this);
         UUID id = mNoteAdapter.mNoteModelList.get(position).getId();
         NoteModel noteModel = mNoteStore.getNote(id);
@@ -504,30 +634,30 @@ public class NoteListActivity extends AppCompatActivity {
         String color = "YELLOW";
         switch (item.getItemId()) {
             /** Color change case`s */
+            case R.id.context_menu_color:
+                color = noteModel.getColor();
+                break;
             case R.id.color_YELLOW:
-                holder.itemView.setBackgroundResource(R.color.YELLOW);
                 color = "YELLOW";
                 break;
             case R.id.color_RED:
-                holder.itemView.setBackgroundResource(R.color.RED);
                 color = "RED";
                 break;
             case R.id.color_GREEN:
-                holder.itemView.setBackgroundResource(R.color.GREEN);
                 color = "GREEN";
                 break;
             case R.id.color_BLUE:
-                holder.itemView.setBackgroundResource(R.color.BLUE);
                 color = "BLUE";
                 break;
             case R.id.color_GREY:
-                holder.itemView.setBackgroundResource(R.color.GREY);
                 color = "GREY";
                 break;
             /** Delete note from app; */
             case R.id.context_menu_delete:
                 CreateDialogUtil.noteModel = noteModel;
                 CreateDialogUtil.position = position;
+                //set dialog message text
+                CreateDialogUtil.setTextMessage = getString(R.string.dialog_context_delete_note);
                 new CreateDialogUtil().show(getSupportFragmentManager(), "delete note");
                 return super.onContextItemSelected(item);
         }
@@ -535,20 +665,37 @@ public class NoteListActivity extends AppCompatActivity {
         noteModel.setColor(color);
         mNoteStore.updateNote(noteModel);
         mNoteAdapter.mNoteModelList.get(position).setColor(color);
+        changeColor(holder, color);
         return super.onContextItemSelected(item);
     }
 
-    /** Delete note after dialog  */
+    private void changeColor(NoteHolder holder, String color) {
+        color.toUpperCase();
+        int colorLayout = getResources().getIdentifier(color, "color", getPackageName());
+        holder.itemView.findViewById(R.id.color_layout).setBackgroundResource(colorLayout);
+    }
+
+    /**
+     * Delete note after dialog
+     */
     public void deleteNote(NoteModel noteModel, int position) {
         mNoteStore.deleteNote(noteModel);
         mNoteAdapter.mNoteModelList.remove(position);
         mNoteAdapter.notifyItemRemoved(position);
     }
 
+    public void deleteNotes(HashMap<Integer, UUID> hashDelete) {
+        mNoteStore.deleteAllSelectedNotes(hashDelete);
+        CreateDialogUtil.hashMapDelete = mHashDeleteNotes = null;
+        updateUI();
+        hideMenuActionBar();
+    }
+
     private class NoteHolder extends RecyclerView.ViewHolder implements
             View.OnClickListener, View.OnCreateContextMenuListener {
 
         private TextView mNoteTitle;
+        private TextView mNoteTitleCircle;
         private TextView mNoteDate;
         private TextView mNoteUuid;
         private TextView mNoteColor;
@@ -560,11 +707,12 @@ public class NoteListActivity extends AppCompatActivity {
             super(itemView);
 
             mNoteTitle = (TextView) itemView.findViewById(R.id.text_title);
+            mNoteTitleCircle = (TextView) itemView.findViewById(R.id.text_in_circle);
             mNoteDate = (TextView) itemView.findViewById(R.id.text_date);
             mNoteUuid = (TextView) itemView.findViewById(R.id.uuid);
             mNoteColor = (TextView) itemView.findViewById(R.id.color);
-            mLinearLayout = (LinearLayout) findViewById(R.id.note_layout);
-            mLinearLayoutInsideNote = (LinearLayout) findViewById(R.id.delete_note_host);
+//            mLinearLayout = (LinearLayout) findViewById(R.id.note_layout);
+//            mLinearLayoutInsideNote = (LinearLayout) findViewById(R.id.delete_note_host);
             itemView.setOnClickListener(this);
             itemView.setOnCreateContextMenuListener(this);
             itemView.setLongClickable(true);
@@ -573,7 +721,9 @@ public class NoteListActivity extends AppCompatActivity {
 
         public void bindNote(NoteModel noteModel) {
             mNoteModel = noteModel;
-            mNoteTitle.setText(mNoteModel.getText());
+            String title = mNoteModel.getText();
+            mNoteTitle.setText(title);
+            mNoteTitleCircle.setText(title.substring(0, 1));
             mNoteUuid.setText(mNoteModel.getId().toString());
             mNoteColor.setText(mNoteModel.getColor());
             mNoteDate.setText(getReadableModifiedDate(mNoteModel.getDate()));
@@ -597,6 +747,7 @@ public class NoteListActivity extends AppCompatActivity {
         private List<NoteModel> mNoteModelList;
         private HashMap<Integer, UUID> mNoteHolderListForDelete;
         private int position;
+        private int lastVisibleItemForCloseCheckboxAnimation;
         private Context context = NoteListActivity.this;
         // Allows to remember the last item shown on screen
         private int lastPosition = -1;
@@ -617,7 +768,8 @@ public class NoteListActivity extends AppCompatActivity {
         @Override
         public NoteHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(NoteListActivity.this);
-            View view = layoutInflater.inflate(R.layout.list_item_note, parent, false);
+//            View view = layoutInflater.inflate(R.layout.list_item_note, parent, false);
+            View view = layoutInflater.inflate(R.layout.list_item_note_final, parent, false);
 
 //            view.findViewById(R.id.delete_note_host).setVisibility(View.VISIBLE);//test
 
@@ -637,21 +789,19 @@ public class NoteListActivity extends AppCompatActivity {
             NoteModel noteModel = mNoteModelList.get(position);
             holder.bindNote(noteModel);
             /** Change color */
-            String color = noteModel.getColor().toUpperCase();
-            int colorLayout = getResources().getIdentifier(color, "color", getPackageName());
-            holder.itemView.setBackgroundResource(colorLayout);
+            String color = noteModel.getColor();
+            changeColor(holder, color);
 
             /** When user click delete button in menu
              * in right side draw CheckBox
              * and save position and UUID of holder
              * in HashMap */
-            if (mDeleteAll) {
+            if (mDeleteAllCheckBoxVisible) {
                 TextView view = (TextView) holder.itemView.findViewById(R.id.uuid);
                 String uuidString = view.getText().toString();
                 final UUID uuid = UUID.fromString(uuidString);
                 holder.itemView.findViewById(R.id.delete_note_host).setVisibility(View.VISIBLE);
                 CheckBox checkBox = (CheckBox) holder.itemView.findViewById(R.id.checkBox_for_delete);
-
 
                 if ((mHashDeleteNotes != null) && (mHashDeleteNotes.get(position) != null)) {
                     checkBox.setChecked(true);
@@ -668,19 +818,59 @@ public class NoteListActivity extends AppCompatActivity {
                             }
                         }
                 );
+                //animation for checkbox visible
+//                visibleAnimationCheckBoxTextLeftTransition(holder.itemView.findViewById(R.id.text_title), NoteListActivity.this);
+//                visibleAnimationCheckBoxTextLeftTransition(holder.itemView.findViewById(R.id.text_date), NoteListActivity.this);
+                visibleAnimationCheckBox(holder.itemView.findViewById(R.id.delete_note_host), NoteListActivity.this);
             }
+//            else if (mReversAnimationCheckBox) {
+            if (mReversAnimationCheckBox) {
+                //animation for text fields hide
+//                visibleAnimationCheckBoxTextLeftTransitionRevers(holder.itemView.findViewById(R.id.text_title), NoteListActivity.this);
+//                visibleAnimationCheckBoxTextLeftTransitionReversTime(holder.itemView.findViewById(R.id.text_date), NoteListActivity.this);
+
+                //when delete menu cancel animation of checkboxes not needed
+                if (lastVisibleItemForCloseCheckboxAnimation == position) {
+                    mReversAnimationCheckBox = false;
+                } else {
+                    //common scenario - all visible checkbox animate to gone
+                    holder.itemView.findViewById(R.id.delete_note_host).setVisibility(View.VISIBLE);
+                    visibleAnimationCheckBoxRevers(holder.itemView.findViewById(R.id.delete_note_host), NoteListActivity.this);
+                }
+            }
+
+
+            // add margin to last element
+//            if (position == mNoteModelList.size() - 1) {
+//                View view = holder.itemView.findViewById(R.id.note_layout);
+//                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)view.getLayoutParams();
+//                params.setMargins(30, 30, 30, 150); //substitute parameters for left, top, right, bottom
+//                view.setLayoutParams(params);
+//            }
+//
             // Here you apply the animation when the view is bound
-//            setAnimation(holder.itemView, position);
+            setAnimation(holder.itemView.findViewById(R.id.color_layout), position);
+//            setAnimation(holder.itemView.findViewById(R.id.text_in_circle), position);
         }
 
         private void setAnimation(View viewToAnimate, int position) {
             // If the bound view wasn't previously displayed on screen, it's animated
             if (position > lastPosition) {
-                Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
+                Animation animation = AnimationUtils.loadAnimation(context, R.anim.visible_color_rectangle);
                 viewToAnimate.startAnimation(animation);
                 lastPosition = position;
             }
         }
+
+//        private void setAnimationCheckBox(View viewToAnimate, int position) {
+//            // If the bound view wasn't previously displayed on screen, it's animated
+//            if (position > lastPosition) {
+//                Animation animation = AnimationUtils.loadAnimation(context, R.anim.visible_checkbox);
+//                viewToAnimate.startAnimation(animation);
+//                viewToAnimate.setVisibility(View.VISIBLE);
+//                lastPosition = position;
+//            }
+//        }
 
         @Override
         public int getItemCount() {

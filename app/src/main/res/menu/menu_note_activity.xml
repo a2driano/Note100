@@ -3,7 +3,7 @@
     <group
         android:visible="true">
         <item
-            android:id="@+id/context_menu_color"
+            android:id="@+id/change_color"
             android:title="@string/context_menu_change_color">
             <menu>
                 <item
@@ -29,7 +29,12 @@
             </menu>
         </item>
         <item
-            android:id="@+id/context_menu_delete"
-            android:title="@string/context_menu_delete"/>
+            android:id="@+id/menu_delete"
+            android:title="@string/menu_delete">
+        </item>
+        <!--<item-->
+        <!--android:id="@+id/menu_settings"-->
+        <!--android:title="@string/menu_setting">-->
+        <!--</item>-->
     </group>
 </menu>
