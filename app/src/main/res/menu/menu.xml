@@ -46,7 +46,7 @@
             android:icon="@drawable/search"
             android:title="@string/search_window"
             app:actionLayout="@layout/menu_actionview_search"
-            app:showAsAction="always">
+            app:showAsAction="ifRoom">
         </item>
         <item
             android:id="@+id/create_note"

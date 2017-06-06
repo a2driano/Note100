@@ -1,12 +1,21 @@
 package com.a2driano.note100.activities;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ScaleDrawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.graphics.drawable.VectorDrawableCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -349,7 +358,7 @@ public class NoteListActivity extends AppCompatActivity {
             fab.setVisibility(View.GONE);
         } else {
 //            menu.setGroupVisible(R.id.menu_delete_actionbar, mMenuDeleteAllVisible);
-            menuAnimationDeleteItemHide();
+//            menuAnimationDeleteItemHide();
         }
 
         mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search_view));
@@ -420,6 +429,9 @@ public class NoteListActivity extends AppCompatActivity {
         //visible element animation
         View search = mToolbar.getMenu().findItem(R.id.search_note).getActionView();
         visibleElementsMenu(search, this);
+        //set group menu visible
+        mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, false);
+        mActionBarMenu.setGroupVisible(R.id.main_menu, true);
     }
 
     /**
@@ -508,7 +520,7 @@ public class NoteListActivity extends AppCompatActivity {
                 mReversAnimationCheckBox = true;
                 hideMenuActionBar();
                 mHashDeleteNotes = null;
-                updateUI();
+//                updateUI();
 //                mNoteAdapter.notifyDataSetChanged();
                 break;
             /** Search icon click */
@@ -544,7 +556,7 @@ public class NoteListActivity extends AppCompatActivity {
     private void openSearchView() {
         fab.setVisibility(View.GONE);
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24px);
-        mToolbar.setBackgroundColor(Color.WHITE);
+        changeColorToolbarAnimation();
 
         if (android.os.Build.VERSION.SDK_INT >= 21) {
             Window window = this.getWindow();
@@ -565,6 +577,35 @@ public class NoteListActivity extends AppCompatActivity {
         }
     }
 
+    private void changeColorToolbarAnimation() {
+        int colorPrimary = ContextCompat.getColor(this, R.color.colorPrimary);
+        int white = ContextCompat.getColor(this, R.color.WHITE);
+        int colorFrom;
+        int colorTo;
+        int colorBackground = 0;
+        //get curent color of toolbar
+        Drawable background = mToolbar.getBackground();
+        if (background instanceof ColorDrawable)
+            colorBackground = ((ColorDrawable) background).getColor();
+
+        if (colorBackground == ContextCompat.getColor(this, R.color.colorPrimary)) {
+            colorFrom = colorPrimary;
+            colorTo = white;
+        } else {
+            colorFrom = white;
+            colorTo = colorPrimary;
+        }
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
+        colorAnimation.setDuration(200); // milliseconds
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                mToolbar.setBackgroundColor((int) animator.getAnimatedValue());
+            }
+        });
+        colorAnimation.start();
+    }
+
     @Override
     public void onBackPressed() {
         /** hide search */
@@ -578,16 +619,14 @@ public class NoteListActivity extends AppCompatActivity {
             mSearchText = "";
             mIsSearshActive = false;
             /** set primary color toolbar and statusbar*/
-            TypedValue typedValue = new TypedValue();
-            getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
-            int color = typedValue.data;
-            mToolbar.setBackgroundColor(color);
+            changeColorToolbarAnimation();
             if (android.os.Build.VERSION.SDK_INT >= 21) {
                 Window window = this.getWindow();
                 window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimaryDark));
                 mToolbar.setElevation(4.0f);
             }
             hideMenuActionBar();
+            invalidateOptionsMenu();
             return;
             //when user click back button in active delete menu action
         } else if (mDeleteAllCheckBoxVisible) {
@@ -599,12 +638,12 @@ public class NoteListActivity extends AppCompatActivity {
     }
 
     private void hideMenuActionBar() {
+        menuAnimationDeleteItemHide();
         mDeleteAllCheckBoxVisible = false;
         mMenuDeleteAllVisible = false;
-        invalidateOptionsMenu();
-        menuAnimationDeleteItemHide();
         visibleFab(fab, this);
         fab.setVisibility(View.VISIBLE);
+//        invalidateOptionsMenu();
 
         /** Remember top position on screen
          * and after setAdapter
