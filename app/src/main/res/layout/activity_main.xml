@@ -8,69 +8,16 @@
     android:background="@color/main_background_dark">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                  xmlns:app="http://schemas.android.com/apk/res-auto"
-                  android:id="@+id/activity_main"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent">
+                    xmlns:app="http://schemas.android.com/apk/res-auto"
+                    android:id="@+id/activity_main"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
 
         <include
             android:id="@+id/toolbar"
-            android:layout_height="wrap_content"
+            layout="@layout/toolbar"
             android:layout_width="match_parent"
-            layout="@layout/toolbar"/>
-
-        <!--<LinearLayout-->
-        <!--android:background="@color/colorPrimary"-->
-        <!--android:id="@+id/search_element"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:paddingLeft="16dp"-->
-        <!--android:paddingRight="16dp"-->
-        <!--android:paddingTop="8dp"-->
-        <!--android:paddingBottom="8dp"-->
-        <!--android:orientation="horizontal">-->
-
-        <!--<LinearLayout-->
-            <!--android:id="@+id/search_element"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:background="@color/accent"-->
-            <!--android:orientation="horizontal"-->
-            <!--android:paddingLeft="4dp"-->
-            <!--android:paddingRight="4dp"-->
-            <!--android:visibility="gone">-->
-
-            <!--<android.support.v7.widget.SearchView-->
-                <!--android:id="@+id/search_view"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="2"-->
-                <!--android:icon="@drawable/search"-->
-                <!--android:imeOptions="actionSearch"-->
-                <!--android:padding="8dp"/>-->
-
-        <!--</LinearLayout>-->
-
-        <!--<LinearLayout-->
-            <!--android:id="@+id/search_element"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:background="@color/accent"-->
-            <!--android:orientation="horizontal"-->
-            <!--android:paddingLeft="4dp"-->
-            <!--android:paddingRight="4dp"-->
-            <!--android:visibility="gone">-->
-
-            <!--<android.support.v7.widget.SearchView-->
-                <!--android:id="@+id/search_view"-->
-                <!--android:layout_width="0dp"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_weight="2"-->
-                <!--android:icon="@drawable/search"-->
-                <!--android:imeOptions="actionSearch"-->
-                <!--android:padding="8dp"/>-->
-
-        <!--</LinearLayout>-->
+            android:layout_height="wrap_content"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recycle_view"
@@ -80,17 +27,6 @@
         </android.support.v7.widget.RecyclerView>
     </RelativeLayout>
 
-    <!--<android.support.design.widget.FloatingActionButton-->
-        <!--android:id="@+id/fab"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_gravity="bottom|right"-->
-        <!--android:layout_margin="16dp"-->
-        <!--android:src="@drawable/ic_add_white_24dp"-->
-        <!--app:elevation="7dp"-->
-        <!--app:fabSize="normal"-->
-        <!--app:layout_behavior="com.a2driano.note100.util.FAB_Float_on_Scroll"-->
-        <!--app:rippleColor="@color/colorPrimary"/>-->
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="match_parent"
@@ -102,3 +38,12 @@
         app:fabSize="normal"
         app:rippleColor="@color/colorPrimary"/>
 </android.support.design.widget.CoordinatorLayout>
+
+<!--<android.support.design.widget.CoordinatorLayout-->
+<!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--android:id="@+id/main_content"-->
+<!--android:layout_width="match_parent"-->
+<!--android:layout_height="match_parent"-->
+<!--android:background="@color/main_background_dark">-->
+

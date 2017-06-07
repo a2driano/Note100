@@ -1,9 +1,6 @@
 package com.a2driano.note100.util;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
-import android.view.Menu;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -29,11 +26,6 @@ public class AnimationUtil {
         Animation animation = AnimationUtils.loadAnimation(context, R.anim.visible_checkbox);
         view.startAnimation(animation);
     }
-
-//    public static void visibleAnimationCheckBoxRevers(View view, Context context) {
-//        Animation animation = AnimationUtils.loadAnimation(context, R.anim.visible_checkbox_revers);
-//        view.startAnimation(animation);
-//    }
 
     public static void visibleAnimationCheckBoxRevers(final View view, Context context) {
         Animation animation = AnimationUtils.loadAnimation(context, R.anim.visible_checkbox_revers);

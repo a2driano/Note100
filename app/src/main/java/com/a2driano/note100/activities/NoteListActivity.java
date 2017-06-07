@@ -6,16 +6,11 @@ import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.ScaleDrawable;
-import android.graphics.drawable.TransitionDrawable;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.graphics.drawable.VectorDrawableCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -23,7 +18,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -40,7 +34,6 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.a2driano.note100.R;
@@ -596,7 +589,7 @@ public class NoteListActivity extends AppCompatActivity {
             colorTo = colorPrimary;
         }
         ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorFrom, colorTo);
-        colorAnimation.setDuration(200); // milliseconds
+        colorAnimation.setDuration(230); // milliseconds
         colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
@@ -622,7 +615,8 @@ public class NoteListActivity extends AppCompatActivity {
             changeColorToolbarAnimation();
             if (android.os.Build.VERSION.SDK_INT >= 21) {
                 Window window = this.getWindow();
-                window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimaryDark));
+//                window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimaryDark));
+                window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimary));
                 mToolbar.setElevation(4.0f);
             }
             hideMenuActionBar();
@@ -808,7 +802,7 @@ public class NoteListActivity extends AppCompatActivity {
         public NoteHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(NoteListActivity.this);
 //            View view = layoutInflater.inflate(R.layout.list_item_note, parent, false);
-            View view = layoutInflater.inflate(R.layout.list_item_note_final, parent, false);
+            View view = layoutInflater.inflate(R.layout.list_item_note, parent, false);
 
 //            view.findViewById(R.id.delete_note_host).setVisibility(View.VISIBLE);//test
 

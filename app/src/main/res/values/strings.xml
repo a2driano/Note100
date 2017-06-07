@@ -2,7 +2,6 @@
     <string name="app_name">NOTE100</string>
 
     <string name="context_menu_change_color">Change color</string>
-    <string name="context_menu_delete">Delete</string>
 
     <string name="context_menu_color_yellow">YELLOW</string>
     <string name="context_menu_color_red">RED</string>
@@ -13,19 +12,12 @@
     <string name="menu_sorting">Sorting</string>
     <string name="menu_setting">Settings</string>
     <string name="menu_delete">Delete</string>
-    <string name="menu_delete_all">DELETE</string>
-    <string name="menu_delete_cancel">CANCEL</string>
     <string name="create_note">Create note</string>
     <string name="menu_alphabetically">Sort alphabetically</string>
     <string name="menu_by_date">Sort by Date</string>
     <string name="menu_search">Search</string>
-    <string name="search_window">Search</string>
-    <string name="search_tint_toolbar">Search</string>
     <string name="dialog_context_delete_note">Delete note?</string>
     <string name="dialog_context_delete_notes">Delete notes?</string>
     <string name="dialog_context_cancel_button_text">Cancel</string>
     <string name="dialog_context_delete_button_text">Delete</string>
-
-    <!--menu note activity page-->
-    <!--<string name="dialog_context_delete_button_text">Delete</string>-->
 </resources>

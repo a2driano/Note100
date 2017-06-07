@@ -30,6 +30,6 @@
         </item>
         <item
             android:id="@+id/context_menu_delete"
-            android:title="@string/context_menu_delete"/>
+            android:title="@string/menu_delete"/>
     </group>
 </menu>
