@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.a2driano.note100.R;
@@ -40,6 +41,7 @@ public class NoteActivity extends AppCompatActivity {
     private String mCheckColor;
     private Toolbar mToolbar;
     private int mResultForIntent;
+    private FrameLayout mFrameTimeLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +66,7 @@ public class NoteActivity extends AppCompatActivity {
 
         mDateText = (TextView) findViewById(R.id.text_date_note_activity);
         mNoteText = (EditText) findViewById(R.id.noteText);
+        mFrameTimeLayout = (FrameLayout) findViewById(R.id.time_note_layout_host);
 
         /** Get data from intent */
         createNoteView();
@@ -90,7 +93,8 @@ public class NoteActivity extends AppCompatActivity {
             String color = mNoteModel.getColor().toUpperCase();
             int colorDateBackground = getResources().getIdentifier(color, "color", getPackageName());
 
-            mDateText.setBackgroundResource(colorDateBackground);
+//            mDateText.setBackgroundResource(colorDateBackground);
+            mFrameTimeLayout.setBackgroundResource(colorDateBackground);
 
             //hide keyboard if note is create, for user first can just read
             mDateText.setFocusableInTouchMode(true);
@@ -99,7 +103,8 @@ public class NoteActivity extends AppCompatActivity {
         }
         mCheckColor = mNoteModel.getColor();
         //animation
-        visibleAnimationColorTextDown(mDateText, this);
+//        visibleAnimationColorTextDown(mDateText, this);
+        visibleAnimationColorTextDown(mFrameTimeLayout, this);
     }
 
 
@@ -190,7 +195,8 @@ public class NoteActivity extends AppCompatActivity {
 
     private void changeColor(String color) {
         int colorLayout = getResources().getIdentifier(color, "color", getPackageName());
-        mDateText.setBackgroundResource(colorLayout);
+//        mDateText.setBackgroundResource(colorLayout);
+        mFrameTimeLayout.setBackgroundResource(colorLayout);
         mNoteModel.setColor(color);
     }
 

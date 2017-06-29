@@ -5,9 +5,7 @@
                 android:id="@+id/note_layout"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginBottom="8dp"
                 android:background="@drawable/layout_for_viewholder">
 
 
@@ -42,35 +40,6 @@
         android:textColor="@color/WHITE"
         android:textSize="28sp"/>
 
-    <!--<FrameLayout-->
-        <!--android:id="@+id/circle_layout"-->
-        <!--android:layout_width="32dp"-->
-        <!--android:layout_height="32dp"-->
-        <!--android:layout_marginBottom="16dp"-->
-        <!--android:layout_marginLeft="16dp"-->
-        <!--android:layout_marginRight="8dp"-->
-        <!--android:layout_marginTop="15dp"-->
-        <!--android:background="@color/BLUE"-->
-        <!--&gt;-->
-    <!--</FrameLayout>-->
-
-    <!--<TextView-->
-        <!--android:id="@+id/text_in_circle"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_alignEnd="@+id/circle_layout"-->
-        <!--android:layout_alignLeft="@+id/circle_layout"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_alignRight="@+id/circle_layout"-->
-        <!--android:layout_alignStart="@+id/circle_layout"-->
-        <!--android:layout_below="@+id/uuid"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:background="@android:color/transparent"-->
-        <!--android:gravity="center"-->
-        <!--android:text="A"-->
-        <!--android:textAllCaps="true"-->
-        <!--android:textColor="@color/WHITE"-->
-        <!--android:textSize="26sp"/>-->
 
     <TextView
         android:id="@+id/text_title"
@@ -79,10 +48,12 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="12dp"
         android:layout_toEndOf="@+id/color_layout"
-        android:layout_toStartOf="@+id/delete_note_host"
+        android:layout_toLeftOf="@+id/time_layout"
+        android:layout_toRightOf="@+id/color_layout"
+        android:layout_toStartOf="@+id/time_layout"
         android:ellipsize="end"
         android:maxLines="1"
-        android:paddingRight="16dp"
+        android:paddingRight="8dp"
         android:text="TextView"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -93,24 +64,37 @@
         tools:layout_constraintBottom_creator="1"
         tools:text="TITLE dfgdfgdfgdfdfsdfsdfsg"/>
 
-    <TextView
-        android:id="@+id/text_date"
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/time_layout"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/text_title"
-        android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/text_title"
-        android:layout_gravity="center_vertical"
+        android:layout_alignParentRight="false"
+        android:layout_alignWithParentIfMissing="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="16dp"
         android:layout_toLeftOf="@+id/delete_note_host"
-        android:gravity="right"
-        android:paddingRight="16dp"
-        android:text="TextView"
-        android:textColor="@color/divider"
-        android:textSize="14sp"
-        app:layout_constraintRight_toRightOf="@+id/delete_note_host"
-        app:layout_constraintTop_toTopOf="@+id/delete_note_host"
-        tools:layout_constraintTop_creator="1"
-        tools:text="Time"/>
+        android:layout_toStartOf="@+id/delete_note_host"
+        android:background="@drawable/time_text_layout"
+        android:paddingBottom="4dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:paddingTop="4dp">
+
+        <TextView
+            android:id="@+id/text_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:text="TextView"
+            android:textColor="@color/divider"
+            android:textSize="12sp"
+            app:layout_constraintRight_toRightOf="@+id/delete_note_host"
+            app:layout_constraintTop_toTopOf="@+id/delete_note_host"
+            tools:layout_constraintTop_creator="1"
+            tools:text="Time"/>
+    </FrameLayout>
 
     <TextView
         android:id="@+id/uuid"

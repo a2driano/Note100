@@ -13,7 +13,6 @@
         class="com.a2driano.note100.activities.NoteActivity$LineEditText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/text_date_note_activity"
         android:background="@android:color/transparent"
         android:fadingEdge="vertical"
         android:gravity="top"
@@ -22,22 +21,42 @@
         android:scrollbars="vertical"
         android:textSize="22sp"
         android:inputType="textCapSentences|textMultiLine"
-        app:textAllCaps="false"/>
+        app:textAllCaps="false"
+        android:layout_below="@+id/time_note_layout_host"/>
 
-    <TextView
-        android:id="@+id/text_date_note_activity"
+    <FrameLayout
+        android:id="@+id/time_note_layout_host"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/toolbar"
-        android:layout_marginBottom="10dp"
-        android:background="@color/YELLOW"
-        android:gravity="center"
-        android:textAlignment="center"
-        android:textColor="@color/WHITE"
-        android:textSize="18sp"
-        tools:text="DATE"/>
+        android:layout_marginBottom="8dp"
+        android:background="@color/YELLOW">
+
+        <FrameLayout
+            android:id="@+id/time_note_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="12dp"
+            android:background="@drawable/time_text_layout_note_activity"
+            android:paddingBottom="4dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="4dp">
+
+            <TextView
+                android:id="@+id/text_date_note_activity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/TRANSPARENT"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textColor="@color/WHITE"
+                android:textSize="16sp"
+                tools:text="DATE"/>
+        </FrameLayout>
+
+    </FrameLayout>
 
     <include
         android:id="@+id/toolbar"
