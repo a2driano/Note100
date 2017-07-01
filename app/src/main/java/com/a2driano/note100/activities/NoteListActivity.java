@@ -133,10 +133,9 @@ public class NoteListActivity extends AppCompatActivity {
                     hideFab(fab, getBaseContext());
                     fab.setVisibility(View.GONE);
 //                    fab.hide();
-                } else if (fab.getVisibility() == View.GONE && dy < 0 && !mMenuDeleteAllVisible) {
+                } else if (fab.getVisibility() == View.GONE && dy < 0 & !mMenuDeleteAllVisible & !mIsSearshActive) {
                     visibleFab(fab, getBaseContext());
                     fab.setVisibility(View.VISIBLE);
-//                    fab.show();
                 }
                 super.onScrolled(recyclerView, dx, dy);
             }
@@ -201,8 +200,11 @@ public class NoteListActivity extends AppCompatActivity {
             updateUI();
             sRefreshData = false;
         }
-        if (!mDeleteAllCheckBoxVisible) {
+        if (!mDeleteAllCheckBoxVisible & !mIsSearshActive) {
             visibleFabOffset(fab, this);
+            fab.setVisibility(View.VISIBLE);
+        } else if (mIsSearshActive) {
+            fab.setVisibility(View.GONE);
         }
         super.onResume();
     }
@@ -733,8 +735,6 @@ public class NoteListActivity extends AppCompatActivity {
         private TextView mNoteUuid;
         private TextView mNoteColor;
         private NoteModel mNoteModel;
-        private LinearLayout mLinearLayout;
-        private LinearLayout mLinearLayoutInsideNote;
 
         public NoteHolder(View itemView) {
             super(itemView);
@@ -744,8 +744,6 @@ public class NoteListActivity extends AppCompatActivity {
             mNoteDate = (TextView) itemView.findViewById(R.id.text_date);
             mNoteUuid = (TextView) itemView.findViewById(R.id.uuid);
             mNoteColor = (TextView) itemView.findViewById(R.id.color);
-//            mLinearLayout = (LinearLayout) findViewById(R.id.note_layout);
-//            mLinearLayoutInsideNote = (LinearLayout) findViewById(R.id.delete_note_host);
             itemView.setOnClickListener(this);
             itemView.setOnCreateContextMenuListener(this);
             itemView.setLongClickable(true);
@@ -801,11 +799,7 @@ public class NoteListActivity extends AppCompatActivity {
         @Override
         public NoteHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(NoteListActivity.this);
-//            View view = layoutInflater.inflate(R.layout.list_item_note, parent, false);
             View view = layoutInflater.inflate(R.layout.list_item_note, parent, false);
-
-//            view.findViewById(R.id.delete_note_host).setVisibility(View.VISIBLE);//test
-
             NoteHolder holder = new NoteHolder(view);
             return holder;
         }
@@ -852,16 +846,9 @@ public class NoteListActivity extends AppCompatActivity {
                         }
                 );
                 //animation for checkbox visible
-//                visibleAnimationCheckBoxTextLeftTransition(holder.itemView.findViewById(R.id.text_title), NoteListActivity.this);
-//                visibleAnimationCheckBoxTextLeftTransition(holder.itemView.findViewById(R.id.text_date), NoteListActivity.this);
                 visibleAnimationCheckBox(holder.itemView.findViewById(R.id.delete_note_host), NoteListActivity.this);
             }
-//            else if (mReversAnimationCheckBox) {
             if (mReversAnimationCheckBox) {
-                //animation for text fields hide
-//                visibleAnimationCheckBoxTextLeftTransitionRevers(holder.itemView.findViewById(R.id.text_title), NoteListActivity.this);
-//                visibleAnimationCheckBoxTextLeftTransitionReversTime(holder.itemView.findViewById(R.id.text_date), NoteListActivity.this);
-
                 //when delete menu cancel animation of checkboxes not needed
                 if (lastVisibleItemForCloseCheckboxAnimation == position) {
                     mReversAnimationCheckBox = false;
@@ -872,18 +859,8 @@ public class NoteListActivity extends AppCompatActivity {
                 }
             }
 
-
-            // add margin to last element
-//            if (position == mNoteModelList.size() - 1) {
-//                View view = holder.itemView.findViewById(R.id.note_layout);
-//                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams)view.getLayoutParams();
-//                params.setMargins(30, 30, 30, 150); //substitute parameters for left, top, right, bottom
-//                view.setLayoutParams(params);
-//            }
-//
             // Here you apply the animation when the view is bound
             setAnimation(holder.itemView.findViewById(R.id.color_layout), position);
-//            setAnimation(holder.itemView.findViewById(R.id.text_in_circle), position);
         }
 
         private void setAnimation(View viewToAnimate, int position) {
@@ -895,15 +872,6 @@ public class NoteListActivity extends AppCompatActivity {
             }
         }
 
-//        private void setAnimationCheckBox(View viewToAnimate, int position) {
-//            // If the bound view wasn't previously displayed on screen, it's animated
-//            if (position > lastPosition) {
-//                Animation animation = AnimationUtils.loadAnimation(context, R.anim.visible_checkbox);
-//                viewToAnimate.startAnimation(animation);
-//                viewToAnimate.setVisibility(View.VISIBLE);
-//                lastPosition = position;
-//            }
-//        }
 
         @Override
         public int getItemCount() {
