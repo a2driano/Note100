@@ -320,6 +320,11 @@ public class NoteListActivity extends AppCompatActivity {
         startActivityForResult(intent, NOTE_START_ACTIVITY);
     }
 
+//    @Override
+//    public void overridePendingTransition(int enterAnim, int exitAnim) {
+//        super.overridePendingTransition(enterAnim, exitAnim);
+//    }
+
     /**
      * Return result to current activity from NoteActivity
      */

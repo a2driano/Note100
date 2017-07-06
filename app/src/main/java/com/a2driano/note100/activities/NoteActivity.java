@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -14,6 +15,7 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -29,6 +31,7 @@ import java.util.UUID;
 import static com.a2driano.note100.activities.NoteListActivity.EXTRA_MESSAGE_UUID;
 import static com.a2driano.note100.activities.NoteListActivity.sRefreshData;
 import static com.a2driano.note100.util.AnimationUtil.visibleAnimationColorTextDown;
+import static com.a2driano.note100.util.AnimationUtil.visibleElementsMenu;
 import static com.a2driano.note100.util.UtilNote.getReadableModifiedDateForNoteActivity;
 
 public class NoteActivity extends AppCompatActivity {
@@ -49,21 +52,11 @@ public class NoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        /** set primary color toolbar */
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.LOLLIPOP) {
-            TypedValue typedValue = new TypedValue();
-            getTheme().resolveAttribute(R.attr.colorPrimary, typedValue, true);
-            int color = typedValue.data;
-            mToolbar.setBackgroundColor(color);
-        }
+        //for toolbar menus
         if (mToolbar != null) {
             setSupportActionBar(mToolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
         mDateText = (TextView) findViewById(R.id.text_date_note_activity);
         mNoteText = (EditText) findViewById(R.id.noteText);
         mFrameTimeLayout = (FrameLayout) findViewById(R.id.time_note_layout_host);
@@ -72,14 +65,13 @@ public class NoteActivity extends AppCompatActivity {
         createNoteView();
     }
 
-        private void createNoteView() {
+    private void createNoteView() {
         Intent intent = this.getIntent();
+        String color = new NoteColor().getYELLOW();//default
         if (intent.getStringExtra(EXTRA_MESSAGE_UUID) == null & !mNextStep) {
             mNoteModel = new NoteModel();
             mNoteModel.setDate(new Date());
-            mNoteModel.setColor(new NoteColor().getYELLOW());
             mNoteModel.setText("");
-
             mDateText.setText(getReadableModifiedDateForNoteActivity(mNoteModel.getDate()));
             isNew = true;
         } else if (!mNextStep) {
@@ -88,59 +80,17 @@ public class NoteActivity extends AppCompatActivity {
             //add info to view
             mNoteText.setText(mNoteModel.getText());
             mDateText.setText(getReadableModifiedDateForNoteActivity(mNoteModel.getDate()));
-
-            //set color
-            String color = mNoteModel.getColor().toUpperCase();
-            int colorDateBackground = getResources().getIdentifier(color, "color", getPackageName());
-
-//            mDateText.setBackgroundResource(colorDateBackground);
-            mFrameTimeLayout.setBackgroundResource(colorDateBackground);
-
+            //get color from intent
+            color = mNoteModel.getColor().toUpperCase();
             //hide keyboard if note is create, for user first can just read
             mDateText.setFocusableInTouchMode(true);
             mDateText.requestFocus();
-//            isNew = false;
+            isNew = false;
         }
+
+        changeColor(color);
         mCheckColor = mNoteModel.getColor();
-        //animation
-//        visibleAnimationColorTextDown(mDateText, this);
-        visibleAnimationColorTextDown(mFrameTimeLayout, this);
     }
-
-
-
-//    private void createNoteView() {
-//        Intent intent = this.getIntent();
-//        if (intent.getStringExtra(EXTRA_MESSAGE_UUID) == null & !mNextStep) {
-//            mNoteModel = new NoteModel();
-//            mNoteModel.setDate(new Date());
-//            mNoteModel.setColor(new NoteColor().getYELLOW());
-//            mNoteModel.setText("");
-//
-//            mDateText.setText(getReadableModifiedDateForNoteActivity(mNoteModel.getDate()));
-//            isNew = true;
-//        } else if (!mNextStep) {
-//            mNoteModel = NoteStoreAsync.get(this)
-//                    .getNote(UUID.fromString(intent.getStringExtra(EXTRA_MESSAGE_UUID)));
-//            //add info to view
-//            mNoteText.setText(mNoteModel.getText());
-//            mDateText.setText(getReadableModifiedDateForNoteActivity(mNoteModel.getDate()));
-//
-//            //set color
-//            String color = mNoteModel.getColor().toUpperCase();
-//            int colorDateBackground = getResources().getIdentifier(color, "color", getPackageName());
-//
-//            mDateText.setBackgroundResource(colorDateBackground);
-//
-//            //hide keyboard if note is create, for user first can just read
-//            mDateText.setFocusableInTouchMode(true);
-//            mDateText.requestFocus();
-////            isNew = false;
-//        }
-//        mCheckColor = mNoteModel.getColor();
-//        //animation
-//        visibleAnimationColorTextDown(mDateText, this);
-//    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -195,9 +145,13 @@ public class NoteActivity extends AppCompatActivity {
 
     private void changeColor(String color) {
         int colorLayout = getResources().getIdentifier(color, "color", getPackageName());
-//        mDateText.setBackgroundResource(colorLayout);
-        mFrameTimeLayout.setBackgroundResource(colorLayout);
+        mToolbar.setBackgroundResource(colorLayout);
         mNoteModel.setColor(color);
+        //set status bar color
+        if (android.os.Build.VERSION.SDK_INT >= 21) {
+            Window window = this.getWindow();
+            window.setStatusBarColor(ContextCompat.getColor(this, colorLayout));
+        }
     }
 
     /**
@@ -232,35 +186,6 @@ public class NoteActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//        /** hide keyboard */
-//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//        imm.hideSoftInputFromWindow(mNoteText.getWindowToken(), 0);
-//    }
-
-    //    /**
-//     * When we return to NoteListActivity, instance of NoteModel add or update in to DB
-//     */
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//        /** for onResume method call */
-//        mNoteText.setText(mNoteModel.getText());
-//        mCheckColor = mNoteModel.getColor();
-//        mNextStep = true;
-//
-//    }
-
-//    @Override
-//    protected void onStop() {
-//        /** hide keyboard */
-//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//        imm.hideSoftInputFromWindow(mNoteText.getWindowToken(), 0);
-//        super.onStop();
-//    }
-
     /**
      * Class for draw line in text field
      */
@@ -273,7 +198,7 @@ public class NoteActivity extends AppCompatActivity {
             mRect = new Rect();
             mPaint = new Paint();
             mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
-            mPaint.setColor(Color.BLUE);
+            mPaint.setColor(ContextCompat.getColor(getContext(), R.color.divider));
         }
 
         @Override
