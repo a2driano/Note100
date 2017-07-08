@@ -41,7 +41,7 @@ import com.a2driano.note100.data.NoteDbSchema;
 import com.a2driano.note100.data.NoteStore;
 import com.a2driano.note100.model.NoteModel;
 import com.a2driano.note100.util.CommonToast;
-import com.a2driano.note100.util.CreateDialogUtil;
+import com.a2driano.note100.util.CreateDialogNotesDeleteUtil;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,7 +56,7 @@ import static com.a2driano.note100.util.AnimationUtil.visibleAnimationCheckBoxRe
 import static com.a2driano.note100.util.AnimationUtil.visibleElementsMenu;
 import static com.a2driano.note100.util.AnimationUtil.visibleFab;
 import static com.a2driano.note100.util.AnimationUtil.visibleFabOffset;
-import static com.a2driano.note100.util.CreateDialogUtil.hashMapDelete;
+import static com.a2driano.note100.util.CreateDialogNotesDeleteUtil.hashMapDelete;
 import static com.a2driano.note100.util.UtilNote.getReadableModifiedDate;
 
 public class NoteListActivity extends AppCompatActivity {
@@ -502,10 +502,10 @@ public class NoteListActivity extends AppCompatActivity {
                 hashMapDelete = hashMapForDelete;
 //                mReversAnimationCheckBox = true;
                 //set dialog message text
-                CreateDialogUtil.setTextMessage = getString(R.string.dialog_context_delete_notes);
+                CreateDialogNotesDeleteUtil.setTextMessage = getString(R.string.dialog_context_delete_notes);
                 //if user don`t select elements for delete and click "delete", app not show dialog
                 if (!hashMapDelete.isEmpty())
-                    new CreateDialogUtil().show(getSupportFragmentManager(), "delete notes");
+                    new CreateDialogNotesDeleteUtil().show(getSupportFragmentManager(), "delete notes");
                 else {
                     MenuItem menuItem = mActionBarMenu.findItem(R.id.menu_delete_cancel);
                     onOptionsItemSelected(menuItem);
@@ -694,11 +694,11 @@ public class NoteListActivity extends AppCompatActivity {
                 break;
             /** Delete note from app; */
             case R.id.context_menu_delete:
-                CreateDialogUtil.noteModel = noteModel;
-                CreateDialogUtil.position = position;
+                CreateDialogNotesDeleteUtil.noteModel = noteModel;
+                CreateDialogNotesDeleteUtil.position = position;
                 //set dialog message text
-                CreateDialogUtil.setTextMessage = getString(R.string.dialog_context_delete_note);
-                new CreateDialogUtil().show(getSupportFragmentManager(), "delete note");
+                CreateDialogNotesDeleteUtil.setTextMessage = getString(R.string.dialog_context_delete_note);
+                new CreateDialogNotesDeleteUtil().show(getSupportFragmentManager(), "delete note");
                 return super.onContextItemSelected(item);
         }
         /** Change color action */
@@ -726,7 +726,7 @@ public class NoteListActivity extends AppCompatActivity {
 
     public void deleteNotes(HashMap<Integer, UUID> hashDelete) {
         mNoteStore.deleteAllSelectedNotes(hashDelete);
-        CreateDialogUtil.hashMapDelete = mHashDeleteNotes = null;
+        CreateDialogNotesDeleteUtil.hashMapDelete = mHashDeleteNotes = null;
         updateUI();
         hideMenuActionBar();
     }

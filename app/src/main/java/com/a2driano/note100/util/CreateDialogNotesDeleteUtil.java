@@ -18,7 +18,7 @@ import java.util.UUID;
  * Created by Andrii Papai on 30.04.2017.
  */
 
-public class CreateDialogUtil extends DialogFragment {
+public class CreateDialogNotesDeleteUtil extends DialogFragment {
 
     public static final int ID_DELETE_NOTE = 0;
     public static final int ID_DELETE_ALL_SELECTED_NOTES = 1;
@@ -63,12 +63,4 @@ public class CreateDialogUtil extends DialogFragment {
         // Create the AlertDialog object and return it
         return builder.create();
     }
-
-//    switch(id){
-//        case ID_DELETE_NOTE:
-//            break;
-//        case ID_DELETE_ALL_SELECTED_NOTES:
-//            break;
-//
-//    }
 }

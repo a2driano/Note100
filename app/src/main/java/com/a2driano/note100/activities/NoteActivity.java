@@ -1,12 +1,16 @@
 package com.a2driano.note100.activities;
 
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -16,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
@@ -24,6 +29,8 @@ import com.a2driano.note100.R;
 import com.a2driano.note100.data.NoteStore;
 import com.a2driano.note100.model.NoteColor;
 import com.a2driano.note100.model.NoteModel;
+import com.a2driano.note100.util.CreateDialogNoteActivityDeleteUtil;
+import com.a2driano.note100.util.CreateDialogNotesDeleteUtil;
 
 import java.util.Date;
 import java.util.UUID;
@@ -130,14 +137,7 @@ public class NoteActivity extends AppCompatActivity {
                 changeColor("GREY");
                 break;
             case R.id.menu_delete:
-                if (isNew) {
-                    finish();
-                } else {
-                    mNoteStore = NoteStore.get(this);
-                    mNoteStore.deleteNote(mNoteModel);
-                    sRefreshData = true;
-                    finish();
-                }
+                new CreateDialogNoteActivityDeleteUtil().show(getSupportFragmentManager(), "delete note activity");
                 break;
         }
         return super.onOptionsItemSelected(menuItem);
@@ -151,6 +151,21 @@ public class NoteActivity extends AppCompatActivity {
         if (android.os.Build.VERSION.SDK_INT >= 21) {
             Window window = this.getWindow();
             window.setStatusBarColor(ContextCompat.getColor(this, colorLayout));
+        }
+    }
+
+    public void deleteNote() {
+        if (isNew) {
+            finish();
+        } else {
+            /** hide keyboard */
+            InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(mNoteText.getWindowToken(), 0);
+
+            mNoteStore = NoteStore.get(this);
+            mNoteStore.deleteNote(mNoteModel);
+            sRefreshData = true;
+            finish();
         }
     }
 
@@ -185,6 +200,27 @@ public class NoteActivity extends AppCompatActivity {
         setResult(mResultForIntent, intent);
         super.onBackPressed();
     }
+
+//    public static class CreateDeleteNoteDialog extends DialogFragment {
+//        @Override
+//        public Dialog onCreateDialog(Bundle savedInstanceState) {
+//            // Use the Builder class for convenient dialog construction
+//            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//            builder.setMessage(R.string.dialog_context_delete_note)
+//                    .setPositiveButton(R.string.dialog_context_delete_button_text, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int id) {
+//                            deleteNote();
+//                        }
+//                    })
+//                    .setNegativeButton(R.string.dialog_context_cancel_button_text, new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog, int id) {
+//                            // User cancelled the dialog
+//                        }
+//                    });
+//            // Create the AlertDialog object and return it
+//            return builder.create();
+//        }
+//    }
 
     /**
      * Class for draw line in text field
