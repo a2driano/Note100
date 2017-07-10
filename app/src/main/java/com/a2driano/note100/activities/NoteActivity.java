@@ -1,5 +1,7 @@
 package com.a2driano.note100.activities;
 
+import android.animation.ArgbEvaluator;
+import android.animation.ValueAnimator;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -8,6 +10,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -95,8 +99,10 @@ public class NoteActivity extends AppCompatActivity {
             isNew = false;
         }
 
-        changeColor(color);
-        mCheckColor = mNoteModel.getColor();
+//        int colorLayout = getResources().getIdentifier(color, "color", getPackageName());
+//        mToolbar.setBackgroundResource(colorLayout);
+        setStartColor(color);
+        mCheckColor = color;
     }
 
     @Override
@@ -144,6 +150,34 @@ public class NoteActivity extends AppCompatActivity {
     }
 
     private void changeColor(String color) {
+        int colorSource = getResources().getIdentifier(color, "color", getPackageName());
+        int colorTo = ContextCompat.getColor(this, colorSource);
+        int colorBackground = 0;
+        //get curent color of toolbar
+        Drawable background = mToolbar.getBackground();
+        if (background instanceof ColorDrawable)
+            colorBackground = ((ColorDrawable) background).getColor();
+
+        if (colorSource == colorBackground)
+            return;
+
+        ValueAnimator colorAnimation = ValueAnimator.ofObject(new ArgbEvaluator(), colorBackground, colorTo);
+        colorAnimation.setDuration(300); // milliseconds
+        colorAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animator) {
+                mToolbar.setBackgroundColor((int) animator.getAnimatedValue());
+                if (android.os.Build.VERSION.SDK_INT >= 21) {
+                    Window window = NoteActivity.this.getWindow();
+                    window.setStatusBarColor((int) animator.getAnimatedValue());
+                }
+            }
+        });
+        colorAnimation.start();
+        mNoteModel.setColor(color);
+    }
+
+    private void setStartColor(String color) {
         int colorLayout = getResources().getIdentifier(color, "color", getPackageName());
         mToolbar.setBackgroundResource(colorLayout);
         mNoteModel.setColor(color);
