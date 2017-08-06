@@ -33,6 +33,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -49,11 +50,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import static com.a2driano.note100.util.AnimationUtil.hideElementsMenu;
+import static com.a2driano.note100.util.AnimationUtil.hideElements;
 import static com.a2driano.note100.util.AnimationUtil.hideFab;
 import static com.a2driano.note100.util.AnimationUtil.visibleAnimationCheckBox;
 import static com.a2driano.note100.util.AnimationUtil.visibleAnimationCheckBoxRevers;
-import static com.a2driano.note100.util.AnimationUtil.visibleElementsMenu;
+import static com.a2driano.note100.util.AnimationUtil.visibleElements;
 import static com.a2driano.note100.util.AnimationUtil.visibleFab;
 import static com.a2driano.note100.util.AnimationUtil.visibleFabOffset;
 import static com.a2driano.note100.util.CreateDialogNotesDeleteUtil.hashMapDelete;
@@ -87,6 +88,7 @@ public class NoteListActivity extends AppCompatActivity {
     private EditText mSearchViewEditText;
     private LinearLayout mSearchLayout;
     private Menu mActionBarMenu;
+    private ImageView mEmptyImage;
 
     static final int NOTE_START_ACTIVITY = 1;
 
@@ -114,6 +116,8 @@ public class NoteListActivity extends AppCompatActivity {
                 createIntentForNoteActivity(null);
             }
         });
+
+        mEmptyImage = (ImageView) findViewById(R.id.empty_image);
 
 
         mIsSearshActive = false;
@@ -206,7 +210,18 @@ public class NoteListActivity extends AppCompatActivity {
         } else if (mIsSearshActive) {
             fab.setVisibility(View.GONE);
         }
+        checkListEmpty(); //if List notes is empty draw empty image
         super.onResume();
+    }
+
+    private void checkListEmpty() {
+        if (mNotes != null && !mNotes.isEmpty()) {
+//            hideElements(mEmptyImage, this);
+            mEmptyImage.setVisibility(View.GONE);
+        } else {
+            visibleElements(mEmptyImage, this);
+            mEmptyImage.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -407,14 +422,14 @@ public class NoteListActivity extends AppCompatActivity {
     private void menuAnimationDeleteItemVisible() {
         //hide element animation
         View search = mToolbar.getMenu().findItem(R.id.search_note).getActionView();
-        hideElementsMenu(search, this);
+        hideElements(search, this);
         //visible elements animation
         View delete = mToolbar.getMenu().findItem(R.id.menu_delete_all).getActionView();
         setOnclickListenerForMenuItemAfterAnimation(delete, R.id.menu_delete_all);
         View cancel = mToolbar.getMenu().findItem(R.id.menu_delete_cancel).getActionView();
         setOnclickListenerForMenuItemAfterAnimation(cancel, R.id.menu_delete_cancel);
-        visibleElementsMenu(delete, this);
-        visibleElementsMenu(cancel, this);
+        visibleElements(delete, this);
+        visibleElements(cancel, this);
         //set group menu visible
         mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, true);
         mActionBarMenu.setGroupVisible(R.id.main_menu, false);
@@ -424,11 +439,11 @@ public class NoteListActivity extends AppCompatActivity {
         //hide elements animation
         View delete = mToolbar.getMenu().findItem(R.id.menu_delete_all).getActionView();
         View cancel = mToolbar.getMenu().findItem(R.id.menu_delete_cancel).getActionView();
-        hideElementsMenu(delete, this);
-        hideElementsMenu(cancel, this);
+        hideElements(delete, this);
+        hideElements(cancel, this);
         //visible element animation
         View search = mToolbar.getMenu().findItem(R.id.search_note).getActionView();
-        visibleElementsMenu(search, this);
+        visibleElements(search, this);
         //set group menu visible
         mActionBarMenu.setGroupVisible(R.id.menu_delete_actionbar, false);
         mActionBarMenu.setGroupVisible(R.id.main_menu, true);
@@ -722,6 +737,7 @@ public class NoteListActivity extends AppCompatActivity {
         mNoteStore.deleteNote(noteModel);
         mNoteAdapter.mNoteModelList.remove(position);
         mNoteAdapter.notifyItemRemoved(position);
+        checkListEmpty();
     }
 
     public void deleteNotes(HashMap<Integer, UUID> hashDelete) {
@@ -729,6 +745,7 @@ public class NoteListActivity extends AppCompatActivity {
         CreateDialogNotesDeleteUtil.hashMapDelete = mHashDeleteNotes = null;
         updateUI();
         hideMenuActionBar();
+        checkListEmpty();
     }
 
     private class NoteHolder extends RecyclerView.ViewHolder implements
@@ -770,6 +787,13 @@ public class NoteListActivity extends AppCompatActivity {
             String uuidString = mNoteUuid.getText().toString();
             createIntentForNoteActivity(uuidString);
         }
+
+//        @Override
+//        public void onClick(View v) {
+//            ViewCompat.setTransitionName(v, "start_note");
+//            String uuidString = mNoteUuid.getText().toString();
+//            createIntentForNoteActivity(uuidString);
+//        }
 
         @Override
         public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {

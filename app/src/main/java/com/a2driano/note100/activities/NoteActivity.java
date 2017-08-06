@@ -2,24 +2,18 @@ package com.a2driano.note100.activities;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
-import android.app.Dialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,15 +28,12 @@ import com.a2driano.note100.data.NoteStore;
 import com.a2driano.note100.model.NoteColor;
 import com.a2driano.note100.model.NoteModel;
 import com.a2driano.note100.util.CreateDialogNoteActivityDeleteUtil;
-import com.a2driano.note100.util.CreateDialogNotesDeleteUtil;
 
 import java.util.Date;
 import java.util.UUID;
 
 import static com.a2driano.note100.activities.NoteListActivity.EXTRA_MESSAGE_UUID;
 import static com.a2driano.note100.activities.NoteListActivity.sRefreshData;
-import static com.a2driano.note100.util.AnimationUtil.visibleAnimationColorTextDown;
-import static com.a2driano.note100.util.AnimationUtil.visibleElementsMenu;
 import static com.a2driano.note100.util.UtilNote.getReadableModifiedDateForNoteActivity;
 
 public class NoteActivity extends AppCompatActivity {
@@ -209,8 +200,8 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 //        /** hide keyboard */
-//        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//        imm.hideSoftInputFromWindow(mNoteText.getWindowToken(), 0);
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mNoteText.getWindowToken(), 0);
         Intent intent = new Intent();
         mNoteStore = NoteStore.get(this);
         if (isNew & (mNoteText.getText().length() != 0)) {

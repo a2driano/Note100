@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NOTE100</string>
+    <string name="context_menu_change_color">Выбрать цвет</string>
+    <string name="context_menu_color_blue">СИНИЙ</string>
+    <string name="context_menu_color_green">ЗЕЛЕНЫЙ</string>
+    <string name="context_menu_color_grey">СЕРЫЙ</string>
+    <string name="context_menu_color_red">КРАСНЫЙ</string>
+    <string name="context_menu_color_yellow">ЖЕЛТЫЙ</string>
+    <string name="create_note">Создать запись</string>
+    <string name="dialog_context_cancel_button_text">Отмена</string>
+    <string name="dialog_context_delete_button_text">Удалить</string>
+    <string name="dialog_context_delete_note">Удалить запись?</string>
+    <string name="dialog_context_delete_notes">Удалить записи?</string>
+    <string name="menu_alphabetically">Сортировать по алфавиту</string>
+    <string name="menu_by_date">Сортировать по дате</string>
+    <string name="menu_delete">Удалить</string>
+    <string name="menu_search">Поиск</string>
+    <string name="menu_setting">Настройки</string>
+    <string name="menu_sorting">Сортировка</string>
+</resources>

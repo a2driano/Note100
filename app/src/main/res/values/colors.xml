@@ -6,8 +6,8 @@
     <color name="colorPrimary">#2e5a97</color>
     <color name="colorPrimaryDark">#1d3d68</color>
     <color name="colorBackgroundYellow">#efecd4</color>
-    <!--<color name="colorAccent">#FF4081</color>-->
-    <color name="colorAccent">#11c97f</color>
+    <!--<color name="colorAccent">#11c97f</color>-->
+    <color name="colorAccent">#11c9b0</color>
 
     <color name="primary">#F44336</color>
     <color name="primary_dark">#D32F2F</color>

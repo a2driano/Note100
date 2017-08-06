@@ -48,12 +48,12 @@ public class AnimationUtil {
     }
 
 
-    public static void visibleElementsMenu(View view, Context context) {
+    public static void visibleElements(View view, Context context) {
         Animation animation = AnimationUtils.loadAnimation(context, R.anim.visible_elements);
         view.startAnimation(animation);
     }
 
-    public static void hideElementsMenu(View view, Context context) {
+    public static void hideElements(View view, Context context) {
         Animation animation = AnimationUtils.loadAnimation(context, R.anim.unvisible_elements);
         view.startAnimation(animation);
 
