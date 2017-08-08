@@ -8,9 +8,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,6 +37,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.a2driano.note100.R;
@@ -87,6 +90,7 @@ public class NoteListActivity extends AppCompatActivity {
     private SearchView mSearchView;
     private EditText mSearchViewEditText;
     private LinearLayout mSearchLayout;
+    private RelativeLayout mLogoToolbarLayout;
     private Menu mActionBarMenu;
     private ImageView mEmptyImage;
 
@@ -108,6 +112,8 @@ public class NoteListActivity extends AppCompatActivity {
 
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle("");
+        mLogoToolbarLayout = (RelativeLayout) findViewById(R.id.logo_layout);
 
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -118,7 +124,6 @@ public class NoteListActivity extends AppCompatActivity {
         });
 
         mEmptyImage = (ImageView) findViewById(R.id.empty_image);
-
 
         mIsSearshActive = false;
         mSearchText = "";
@@ -570,6 +575,7 @@ public class NoteListActivity extends AppCompatActivity {
 
     private void openSearchView() {
         fab.setVisibility(View.GONE);
+        mLogoToolbarLayout.setVisibility(View.GONE); //logo gone when search is active
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24px);
         changeColorToolbarAnimation();
 
@@ -635,14 +641,16 @@ public class NoteListActivity extends AppCompatActivity {
             mIsSearshActive = false;
             /** set primary color toolbar and statusbar*/
             changeColorToolbarAnimation();
-            if (android.os.Build.VERSION.SDK_INT >= 21) {
+            if (Build.VERSION.SDK_INT >= 21) {
                 Window window = this.getWindow();
-//                window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimaryDark));
-                window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimary));
-                mToolbar.setElevation(4.0f);
+//                window.setStatusBarColor(this.getResources().getColor(R.color.colorPrimary));
+                window.setStatusBarColor(ResourcesCompat.getColor(getResources(), R.color.colorPrimary, null));
+//                mToolbar.setElevation(4.0f);
+                mToolbar.setElevation(0f);
             }
             hideMenuActionBar();
             invalidateOptionsMenu();
+            mLogoToolbarLayout.setVisibility(View.VISIBLE); //logo visible when search is not active
             return;
             //when user click back button in active delete menu action
         } else if (mDeleteAllCheckBoxVisible) {
