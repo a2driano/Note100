@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--<explode-->
+    <!--android:duration="500"-->
+    <!--android:interpolator="@android:interpolator/bounce" />-->
+    <!--<explode-->
+        <!--android:duration="2000"/>-->
+    <fade
+        android:duration="450"/>
+
+    <!--<slide-->
+        <!--android:duration="500"-->
+        <!--android:startDelay="300"-->
+        <!--android:slideEdge="right">-->
+        <!--<targets>-->
+            <!--&lt;!&ndash;<target android:targetId="@id/noteText"/>&ndash;&gt;-->
+            <!--<target android:targetId="@id/time_note_layout"/>-->
+        <!--</targets>-->
+    <!--</slide>-->
+    <!--<fade-->
+        <!--android:duration="700">-->
+        <!--<targets>-->
+            <!--&lt;!&ndash;<target android:targetId="@id/noteText"/>&ndash;&gt;-->
+            <!--<target android:targetId="@id/toolbar"/>-->
+        <!--</targets>-->
+    <!--</fade>-->
+    <!--<slide-->
+        <!--android:duration="500"-->
+        <!--android:startDelay="500"-->
+        <!--android:slideEdge="right">-->
+        <!--<targets>-->
+            <!--&lt;!&ndash;<target android:targetId="@id/noteText"/>&ndash;&gt;-->
+            <!--<target android:targetId="@id/time_note_layout"/>-->
+        <!--</targets>-->
+    <!--</slide>-->
+    <!--<fade-->
+        <!--android:duration="500"-->
+        <!--android:startDelay="500">-->
+        <!--<targets>-->
+            <!--<target android:targetId="@id/time_note_layout"/>-->
+        <!--</targets>-->
+    <!--</fade>-->
+
+</transitionSet>

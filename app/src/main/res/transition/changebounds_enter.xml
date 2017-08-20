@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--<changeBounds-->
+        <!--android:duration="500"-->
+        <!--android:startDelay="150"/>-->
+    <changeBounds
+        android:startDelay="100"
+        android:duration="400"/>
+    <!--patternPathMotion android:patternPathData="M0 0 L0 100 L100 0"/-->
+    <!--<arcMotion-->
+        <!--android:maximumAngle="90"-->
+        <!--android:minimumHorizontalAngle="90"-->
+        <!--android:minimumVerticalAngle="0"/>-->
+    <!--<slide-->
+        <!--android:duration="500"-->
+        <!--android:slideEdge="top" />-->
+    <!--<fade-->
+        <!--android:duration="500"-->
+        <!--android:fadingMode="fade_in"-->
+        <!--android:interpolator="@android:interpolator/accelerate_quint"/>-->
+</transitionSet>

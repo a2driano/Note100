@@ -7,6 +7,37 @@
                 android:layout_height="match_parent"
                 tools:context="com.a2driano.note100.activities.NoteActivity">
 
+    <!--<FrameLayout-->
+        <!--android:id="@+id/transition_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:background="@color/GREEN"-->
+        <!--android:layout_above="@+id/noteText">-->
+
+    <!--</FrameLayout>-->
+
+    <FrameLayout
+        android:id="@+id/transition_view_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/noteText"
+        android:layout_alignParentTop="true"
+        android:background="@color/WHITE"
+        android:visibility="gone">
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/transition_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/noteText"
+        android:layout_alignParentTop="true"
+        android:background="@color/WHITE"
+        android:visibility="gone">
+
+    </FrameLayout>
+
     <view
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/noteText"
@@ -14,21 +45,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"
+        android:layout_marginTop="10dp"
         android:background="@android:color/transparent"
         android:fadingEdge="vertical"
         android:gravity="top"
         android:inputType="textCapSentences|textMultiLine"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:paddingTop="10dp"
         android:scrollbars="vertical"
         android:textSize="22sp"
+        app:elevation="1dp"
         app:textAllCaps="false"/>
 
     <include
         android:id="@+id/toolbar"
         layout="@layout/toolbar"
-        />
+        android:transitionName="@string/transition_view"        />
+
+    <!--<include-->
+    <!--android:id="@+id/toolbar"-->
+    <!--layout="@layout/toolbar"/>-->
 
 
     <FrameLayout

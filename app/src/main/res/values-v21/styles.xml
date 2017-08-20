@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:windowActionBar">false</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
+        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+        <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="searchViewStyle">@style/AppTheme.SearchView</item>-->
+        <item name="android:textColorHint">@android:color/white</item>
+
+
+        <!-- transition declare-->
+        <item name="android:windowContentTransitions">true</item>
+        <!-- specify enter and exit transitions -->
+        <item name="android:windowEnterTransition">@transition/enter_transition</item>
+        <item name="android:windowExitTransition">@transition/exit_transition</item>
+        <!--<item name="android:windowReturnTransition">@transition/return_transition</item>-->
+        <!-- specify shared element transitions -->
+        <item name="android:windowSharedElementExitTransition">@transition/changebounds</item>
+        <item name="android:windowSharedElementEnterTransition">@transition/changebounds</item>
+        <!--<item name="android:windowSharedElementEnterTransition">@transition/changebounds</item>-->
+        <!--<item name="android:windowSharedElementExitTransition">@transition/explode</item>-->
+    </style>
+</resources>

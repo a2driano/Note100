@@ -18,4 +18,10 @@
     <string name="menu_search">Поиск</string>
     <string name="menu_setting">Настройки</string>
     <string name="menu_sorting">Сортировка</string>
+    <string name="menu_by_color">Сортировать по цвету</string>
+    <string name="sort_by_color">Сортировка по цвету</string>
+    <string name="sort_by_newest">Сначала новые</string>
+    <string name="sort_by_oldest">Сначала старые</string>
+    <string name="sort_from_a_to_z">От А до Я</string>
+    <string name="sort_from_z_to_a">От Я до А</string>
 </resources>

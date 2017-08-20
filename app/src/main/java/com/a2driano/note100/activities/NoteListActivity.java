@@ -2,24 +2,31 @@ package com.a2driano.note100.activities;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
+import android.app.ActivityOptions;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.transition.Explode;
+import android.util.Pair;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -93,7 +100,7 @@ public class NoteListActivity extends AppCompatActivity {
     private RelativeLayout mLogoToolbarLayout;
     private Menu mActionBarMenu;
     private ImageView mEmptyImage;
-
+    private int mAdapterPositionSelectedItemView;
     static final int NOTE_START_ACTIVITY = 1;
 
     /**
@@ -110,6 +117,8 @@ public class NoteListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mAdapterPositionSelectedItemView = -1;
+
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("");
@@ -119,9 +128,11 @@ public class NoteListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createIntentForNoteActivity(null);
+//                createIntentForNoteActivity(null);
+                createIntentForNoteActivity(null, fab);
             }
         });
+
 
         mEmptyImage = (ImageView) findViewById(R.id.empty_image);
 
@@ -204,10 +215,33 @@ public class NoteListActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onActivityReenter(int resultCode, Intent data) {
+        super.onActivityReenter(resultCode, data);
+        sRefreshData = true;
+//        updateUI();
+//        mNoteAdapter.notifyDataSetChanged();
+//        System.out.println("****************************onActivityReenter");
+    }
+
+
+    @Override
     protected void onResume() {
+//        System.out.println("**************************** sRefreshData: " + sRefreshData);
         if (sRefreshData) {
             updateUI();
             sRefreshData = false;
+        }
+        //change color after back transition
+        if (mAdapterPositionSelectedItemView != -1) {
+            updateUI();
+            NoteHolder holder = (NoteHolder) mNoteRecyclerView.findViewHolderForLayoutPosition(mAdapterPositionSelectedItemView);
+//            NoteHolder holder = (NoteHolder) mNoteRecyclerView.findViewHolderForAdapterPosition(mAdapterPositionSelectedItemView);
+
+            String color = mNotes.get(mAdapterPositionSelectedItemView).getColor();
+            changeColor(holder, color);
+
+            mNoteAdapter.notifyItemChanged(mAdapterPositionSelectedItemView);
+//            mNoteAdapter.notifyDataSetChanged();
         }
         if (!mDeleteAllCheckBoxVisible & !mIsSearshActive) {
             visibleFabOffset(fab, this);
@@ -217,6 +251,12 @@ public class NoteListActivity extends AppCompatActivity {
         }
         checkListEmpty(); //if List notes is empty draw empty image
         super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        fab.setVisibility(View.GONE);
+        super.onStop();
     }
 
     private void checkListEmpty() {
@@ -230,42 +270,8 @@ public class NoteListActivity extends AppCompatActivity {
     }
 
     /**
-     * For refresh activity
+     * refresh activity
      */
-//    private void updateUI() {
-//        new AsyncTask<Void, Void, Void>() {
-//            @Override
-//            protected Void doInBackground(final Void... params) {
-//                mNoteStore = NoteStore.get(NoteListActivity.this);
-//                mNotes = mNoteStore.getNotes();
-//                return null;
-//            }
-//
-//            @Override
-//            protected void onPostExecute(final Void result) {
-//                sortListNoteForAdapter();
-//            }
-//        }.execute();
-//    }
-//
-//    private void updateUI(final String text) {
-//        mSearchText = text;
-//
-//        new AsyncTask<Void, Void, Void>() {
-//            @Override
-//            protected Void doInBackground(final Void... params) {
-//                mNoteStore = NoteStore.get(NoteListActivity.this);
-//                mNotes = mNoteStore.getNotes(text);
-//                sortListNoteForAdapter();
-//                return null;
-//            }
-//
-//            @Override
-//            protected void onPostExecute(final Void result) {
-//                sortListNoteForAdapter();
-//            }
-//        }.execute();
-//    }
     private void updateUI() {
         mNoteStore = NoteStore.get(NoteListActivity.this);
         mNotes = mNoteStore.getNotes();
@@ -280,6 +286,9 @@ public class NoteListActivity extends AppCompatActivity {
     }
 
     private void sortListNoteForAdapter() {
+//        System.out.println("**************************** updateUI before");
+//        System.out.println("**************************** updateUI before");
+//        System.out.println("**************************** updateUI before");
         sortNoteList(sortingVariable, reverseVariable);
         if (mNoteAdapter == null) {
             mNoteAdapter = new NoteAdapter(mNotes);
@@ -312,6 +321,20 @@ public class NoteListActivity extends AppCompatActivity {
                         return o2.getText().toUpperCase().compareTo(o1.getText().toUpperCase());
                     }
                 });
+        } else if (parameter.equals(NoteDbSchema.NoteTable.Cols.COLOR)) {
+            Collections.sort(mNotes, new Comparator<NoteModel>() {
+                @Override
+                public int compare(NoteModel o1, NoteModel o2) {
+                    return o1.getColor().toUpperCase().compareTo(o2.getColor().toUpperCase());
+                }
+            });
+            if (!reverse)
+                Collections.sort(mNotes, new Comparator<NoteModel>() {
+                    @Override
+                    public int compare(NoteModel o1, NoteModel o2) {
+                        return o2.getColor().toUpperCase().compareTo(o1.getColor().toUpperCase());
+                    }
+                });
         } else {
             Collections.sort(mNotes, new Comparator<NoteModel>() {
                 @Override
@@ -340,6 +363,33 @@ public class NoteListActivity extends AppCompatActivity {
         startActivityForResult(intent, NOTE_START_ACTIVITY);
     }
 
+    private void createIntentForNoteActivity(String UUID, View v) {
+        Intent intent = new Intent(NoteListActivity.this, NoteActivity.class);
+        //setting transition
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ActivityOptions transitionActivityOptions;
+            if (UUID == null) {
+                //if click to fab/create new note
+                mAdapterPositionSelectedItemView = -1;//for start position
+                transitionActivityOptions = ActivityOptions.makeSceneTransitionAnimation(this);
+                startActivity(intent, transitionActivityOptions.toBundle());
+            } else {
+                intent.putExtra(EXTRA_MESSAGE_UUID, UUID);
+                View view = v.findViewById(R.id.color_layout);
+                view.setTransitionName(getString(R.string.transition_view));
+                Pair<View, String> p1 = Pair.create(view, getString(R.string.transition_view));
+                transitionActivityOptions = ActivityOptions.makeSceneTransitionAnimation(this, p1);
+                startActivity(intent, transitionActivityOptions.toBundle());
+            }
+
+        } else {
+            if (UUID != null)
+                intent.putExtra(EXTRA_MESSAGE_UUID, UUID);
+//        intent.putExtra(EXTRA_MESSAGE_SEARCH_IS_ACTIVE, mIsSearshActive);
+            startActivityForResult(intent, NOTE_START_ACTIVITY);
+        }
+    }
+
 //    @Override
 //    public void overridePendingTransition(int enterAnim, int exitAnim) {
 //        super.overridePendingTransition(enterAnim, exitAnim);
@@ -351,6 +401,9 @@ public class NoteListActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        System.out.println("**************************** onActivityResult: ");
+        System.out.println("**************************** onActivityResult: ");
+        System.out.println("**************************** onActivityResult: ");
         /** If search not active */
         if (resultCode == RESULT_OK & mSearchText != "")
             updateUI(mSearchText);
@@ -462,20 +515,20 @@ public class NoteListActivity extends AppCompatActivity {
         String messageToast = "";
         switch (item.getItemId()) {
             case R.id.create_note:
-                createIntentForNoteActivity(null);
+                createIntentForNoteActivity(null, fab);
                 break;
             /** Sorting by text */
             case R.id.menu_sort_alphabet:
                 if (!sortingVariable.equals(NoteDbSchema.NoteTable.Cols.TEXT)) {
                     sortingVariable = NoteDbSchema.NoteTable.Cols.TEXT;
                     reverseVariable = true;
-                    messageToast = "Sort note from A to Z";
+                    messageToast = getString(R.string.sort_from_a_to_z);
                 } else if (reverseVariable) {
                     reverseVariable = false;
-                    messageToast = "Sort note from Z to A";
+                    messageToast = getString(R.string.sort_from_z_to_a);
                 } else if (!reverseVariable) {
                     reverseVariable = true;
-                    messageToast = "Sort note from A to Z";
+                    messageToast = getString(R.string.sort_from_a_to_z);
                 }
                 saveSharedPreferences(sortingVariable, reverseVariable);
                 updateUI();
@@ -486,13 +539,13 @@ public class NoteListActivity extends AppCompatActivity {
                 if (!sortingVariable.equals(NoteDbSchema.NoteTable.Cols.DATE)) {
                     sortingVariable = NoteDbSchema.NoteTable.Cols.DATE;
                     reverseVariable = false;
-                    messageToast = "Sort by newest";
+                    messageToast = getString(R.string.sort_by_newest);
                 } else if (reverseVariable) {
                     reverseVariable = false;
-                    messageToast = "Sort by newest";
+                    messageToast = getString(R.string.sort_by_newest);
                 } else if (!reverseVariable) {
                     reverseVariable = true;
-                    messageToast = "Sort by oldest";
+                    messageToast = getString(R.string.sort_by_oldest);
                 }
                 saveSharedPreferences(sortingVariable, reverseVariable);
                 updateUI();
@@ -500,6 +553,23 @@ public class NoteListActivity extends AppCompatActivity {
                 break;
 //            case R.id.menu_settings:
 //                break;
+            /** Sorting by color & date*/
+            case R.id.menu_sort_color:
+                if (!sortingVariable.equals(NoteDbSchema.NoteTable.Cols.COLOR)) {
+                    sortingVariable = NoteDbSchema.NoteTable.Cols.COLOR;
+                    reverseVariable = false;
+                    messageToast = getString(R.string.sort_by_color);
+                } else if (reverseVariable) {
+                    reverseVariable = false;
+                    messageToast = getString(R.string.sort_by_color);
+                } else if (!reverseVariable) {
+                    reverseVariable = true;
+                    messageToast = getString(R.string.sort_by_color);
+                }
+                saveSharedPreferences(sortingVariable, reverseVariable);
+                updateUI();
+                CommonToast.showToast(this, messageToast);
+                break;
             /** Delete menu option click*/
             case R.id.menu_delete:
                 mDeleteAllCheckBoxVisible = true;
@@ -765,6 +835,7 @@ public class NoteListActivity extends AppCompatActivity {
         private TextView mNoteUuid;
         private TextView mNoteColor;
         private NoteModel mNoteModel;
+        private int mPosition;
 
         public NoteHolder(View itemView) {
             super(itemView);
@@ -780,7 +851,8 @@ public class NoteListActivity extends AppCompatActivity {
         }
 
 
-        public void bindNote(NoteModel noteModel) {
+        public void bindNote(NoteModel noteModel, int position) {
+            mPosition = position;
             mNoteModel = noteModel;
             String title = mNoteModel.getText();
             mNoteTitle.setText(title);
@@ -792,13 +864,17 @@ public class NoteListActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
+//            View view = v.findViewById(R.id.color_layout);
+//            ViewCompat.setTransitionName(view, String.valueOf(R.string.transition_view));
+            mAdapterPositionSelectedItemView = mPosition;
             String uuidString = mNoteUuid.getText().toString();
-            createIntentForNoteActivity(uuidString);
+//            createIntentForNoteActivity(uuidString);
+            createIntentForNoteActivity(uuidString, v);
         }
 
 //        @Override
 //        public void onClick(View v) {
-//            ViewCompat.setTransitionName(v, "start_note");
+//
 //            String uuidString = mNoteUuid.getText().toString();
 //            createIntentForNoteActivity(uuidString);
 //        }
@@ -851,7 +927,7 @@ public class NoteListActivity extends AppCompatActivity {
                 }
             });
             NoteModel noteModel = mNoteModelList.get(position);
-            holder.bindNote(noteModel);
+            holder.bindNote(noteModel, position);
             /** Change color */
             String color = noteModel.getColor();
             changeColor(holder, color);

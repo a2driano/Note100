@@ -19,9 +19,9 @@
         <activity
             android:name=".activities.NoteActivity"
             android:label="">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activities.NoteListActivity"/>
+            <!--<meta-data-->
+                <!--android:name="android.support.PARENT_ACTIVITY"-->
+                <!--android:value=".activities.NoteListActivity"/>-->
         </activity>
     </application>
     <!--<activity android:name=".activities.NoteListActivity"-->

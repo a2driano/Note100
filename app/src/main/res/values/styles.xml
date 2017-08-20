@@ -20,6 +20,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <!--<item name="searchViewStyle">@style/AppTheme.SearchView</item>-->
         <item name="android:textColorHint">@android:color/white</item>
+
     </style>
 
     <style name="SearchViewTheme" parent="ThemeOverlay.AppCompat.Light">

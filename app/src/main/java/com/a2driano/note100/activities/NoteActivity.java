@@ -9,6 +9,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,7 +18,11 @@ import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -34,6 +39,9 @@ import java.util.UUID;
 
 import static com.a2driano.note100.activities.NoteListActivity.EXTRA_MESSAGE_UUID;
 import static com.a2driano.note100.activities.NoteListActivity.sRefreshData;
+import static com.a2driano.note100.util.AnimationUtil.hideElements;
+import static com.a2driano.note100.util.AnimationUtil.visibleElementAfterTransition;
+import static com.a2driano.note100.util.AnimationUtil.visibleElements;
 import static com.a2driano.note100.util.UtilNote.getReadableModifiedDateForNoteActivity;
 
 public class NoteActivity extends AppCompatActivity {
@@ -47,6 +55,9 @@ public class NoteActivity extends AppCompatActivity {
     private Toolbar mToolbar;
     private int mResultForIntent;
     private FrameLayout mFrameTimeLayout;
+    private FrameLayout mTransitionView;
+    private FrameLayout mTransitionWhiteBackground;
+    private FrameLayout mTransitionViewBottom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +65,9 @@ public class NoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
         mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mTransitionView = (FrameLayout) findViewById(R.id.transition_view);
+        mTransitionViewBottom = (FrameLayout) findViewById(R.id.transition_view_bottom);
+
         //for toolbar menus
         if (mToolbar != null) {
             setSupportActionBar(mToolbar);
@@ -62,7 +76,7 @@ public class NoteActivity extends AppCompatActivity {
         mDateText = (TextView) findViewById(R.id.text_date_note_activity);
         mNoteText = (EditText) findViewById(R.id.noteText);
         mFrameTimeLayout = (FrameLayout) findViewById(R.id.time_note_layout_host);
-
+        mFrameTimeLayout.setVisibility(View.GONE);
         /** Get data from intent */
         createNoteView();
     }
@@ -88,12 +102,21 @@ public class NoteActivity extends AppCompatActivity {
             mDateText.setFocusableInTouchMode(true);
             mDateText.requestFocus();
             isNew = false;
+
+            //set transition
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mToolbar.setTransitionName(getString(R.string.transition_view));
+            }
         }
+        visibleElementAfterTransition(mFrameTimeLayout, this);
+        mFrameTimeLayout.setVisibility(View.VISIBLE);
 
 //        int colorLayout = getResources().getIdentifier(color, "color", getPackageName());
 //        mToolbar.setBackgroundResource(colorLayout);
         setStartColor(color);
         mCheckColor = color;
+
+
     }
 
     @Override
@@ -158,6 +181,7 @@ public class NoteActivity extends AppCompatActivity {
             @Override
             public void onAnimationUpdate(ValueAnimator animator) {
                 mToolbar.setBackgroundColor((int) animator.getAnimatedValue());
+                mTransitionView.setBackgroundColor((int) animator.getAnimatedValue());
                 if (android.os.Build.VERSION.SDK_INT >= 21) {
                     Window window = NoteActivity.this.getWindow();
                     window.setStatusBarColor((int) animator.getAnimatedValue());
@@ -171,6 +195,8 @@ public class NoteActivity extends AppCompatActivity {
     private void setStartColor(String color) {
         int colorLayout = getResources().getIdentifier(color, "color", getPackageName());
         mToolbar.setBackgroundResource(colorLayout);
+        mTransitionView.setBackgroundResource(colorLayout);
+        mTransitionViewBottom.setBackgroundResource(colorLayout);
         mNoteModel.setColor(color);
         //set status bar color
         if (android.os.Build.VERSION.SDK_INT >= 21) {
@@ -181,7 +207,10 @@ public class NoteActivity extends AppCompatActivity {
 
     public void deleteNote() {
         if (isNew) {
-            finish();
+//            finish();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                finishAfterTransition();
+            }
         } else {
             /** hide keyboard */
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -190,7 +219,10 @@ public class NoteActivity extends AppCompatActivity {
             mNoteStore = NoteStore.get(this);
             mNoteStore.deleteNote(mNoteModel);
             sRefreshData = true;
-            finish();
+//            finish();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                finishAfterTransition();
+            }
         }
     }
 
@@ -200,6 +232,8 @@ public class NoteActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 //        /** hide keyboard */
+//        hideElements(mFrameTimeLayout, this);
+//        mFrameTimeLayout.setVisibility(View.GONE);
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mNoteText.getWindowToken(), 0);
         Intent intent = new Intent();
@@ -223,10 +257,18 @@ public class NoteActivity extends AppCompatActivity {
         isNew = false;
 
         setResult(mResultForIntent, intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            finishAfterTransition();
+        }
         super.onBackPressed();
     }
 
-//    public static class CreateDeleteNoteDialog extends DialogFragment {
+    @Override
+    public void onActivityReenter(int resultCode, Intent data) {
+        super.onActivityReenter(resultCode, data);
+    }
+
+    //    public static class CreateDeleteNoteDialog extends DialogFragment {
 //        @Override
 //        public Dialog onCreateDialog(Bundle savedInstanceState) {
 //            // Use the Builder class for convenient dialog construction

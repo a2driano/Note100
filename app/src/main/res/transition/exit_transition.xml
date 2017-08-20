@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<transitionSet xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--<explode-->
+    <!--android:duration="500"-->
+    <!--android:interpolator="@android:interpolator/bounce" />-->
+    <!--<changeBounds>-->
+    <!--<targets>-->
+    <!--<target android:targetId="@id/color_layout"/>-->
+    <!--</targets>-->
+    <!--</changeBounds>-->
+
+    <!--<changeBounds-->
+    <!--android:duration="250">-->
+
+    <!--</changeBounds>-->
+    <!--&lt;!&ndash;<explode&ndash;&gt;-->
+    <!--&lt;!&ndash;android:duration="500"/>&ndash;&gt;-->
+    <!--<fade android:slideEdge="bottom"-->
+    <!--android:duration="500">-->
+    <!--<targets>-->
+    <!--<target android:targetId="@id/recycle_view"/>-->
+    <!--</targets>-->
+    <!--</fade>-->
+    <fade
+        android:duration="450"/>
+    <!--<fade-->
+        <!--android:duration="500"-->
+        <!--android:fadingMode="fade_in_out">-->
+        <!--<targets>-->
+            <!--<target android:targetId="@id/text_in_circle"/>-->
+        <!--</targets>-->
+    <!--</fade>-->
+
+    <!--<explode-->
+        <!--android:duration="500">-->
+        <!--<targets>-->
+            <!--<target android:targetId="@id/note_layout"/>-->
+        <!--</targets>-->
+    <!--</explode>-->
+    <!--<slide-->
+    <!--android:duration="1000"-->
+    <!--android:slideEdge="bottom"/>-->
+    <!--<fade-->
+    <!--android:duration="1000"-->
+    <!--android:fadingMode="fade_in"-->
+    <!--android:interpolator="@android:interpolator/accelerate_quint">-->
+    <!--&lt;!&ndash;<targets>&ndash;&gt;-->
+    <!--&lt;!&ndash;<target android:targetId="@id/color_layout"/>&ndash;&gt;-->
+    <!--&lt;!&ndash;</targets>&ndash;&gt;-->
+    <!--</fade>-->
+</transitionSet>

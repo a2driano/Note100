@@ -31,8 +31,8 @@
         </item>
         <item
             android:id="@+id/menu_delete_cancel"
-            android:title="@string/dialog_context_cancel_button_text"
             android:icon="@drawable/ic_cancel_black_24px"
+            android:title="@string/dialog_context_cancel_button_text"
             app:actionLayout="@layout/menu_actionview_cancel_delete_all"
             app:showAsAction="always">
         </item>
@@ -62,11 +62,14 @@
                 <item
                     android:id="@+id/menu_sort_date"
                     android:title="@string/menu_by_date"/>
+                <item
+                    android:id="@+id/menu_sort_color"
+                    android:title="@string/menu_by_color"/>
             </menu>
         </item>
         <!--<item-->
-            <!--android:id="@+id/menu_settings"-->
-            <!--android:title="@string/menu_setting">-->
+        <!--android:id="@+id/menu_settings"-->
+        <!--android:title="@string/menu_setting">-->
         <!--</item>-->
         <item
             android:id="@+id/menu_delete"

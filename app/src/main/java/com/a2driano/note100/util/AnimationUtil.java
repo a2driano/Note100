@@ -53,6 +53,11 @@ public class AnimationUtil {
         view.startAnimation(animation);
     }
 
+    public static void visibleElementAfterTransition(View view, Context context) {
+        Animation animation = AnimationUtils.loadAnimation(context, R.anim.visible_element_after_transition);
+        view.startAnimation(animation);
+    }
+
     public static void hideElements(View view, Context context) {
         Animation animation = AnimationUtils.loadAnimation(context, R.anim.unvisible_elements);
         view.startAnimation(animation);

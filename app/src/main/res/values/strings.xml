@@ -15,9 +15,21 @@
     <string name="create_note">Create note</string>
     <string name="menu_alphabetically">Sort alphabetically</string>
     <string name="menu_by_date">Sort by Date</string>
+    <string name="menu_by_color">Sort by Color</string>
     <string name="menu_search">Search</string>
     <string name="dialog_context_delete_note">Delete note?</string>
     <string name="dialog_context_delete_notes">Delete notes?</string>
     <string name="dialog_context_cancel_button_text">Cancel</string>
     <string name="dialog_context_delete_button_text">Delete</string>
+    <string name="sort_from_a_to_z">Sort note from A to Z</string>
+    <string name="sort_from_z_to_a">Sort note from Z to A</string>
+    <string name="sort_by_newest">Sort by newest</string>
+    <string name="sort_by_oldest">Sort by oldest</string>
+    <string name="sort_by_color">Sort by color</string>
+
+    <!-- transition name -->
+    <string name="transition_view">transition_view</string>
+    <string name="transition_view_2">transition_view_2</string>
+    <string name="transition_view_3">transition_view_3</string>
+    <string name="transition_view_fab">transition_view_fab</string>
 </resources>
