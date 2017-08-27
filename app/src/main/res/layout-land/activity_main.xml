@@ -28,9 +28,9 @@
             android:layout_alignBottom="@id/toolbar"
             android:layout_alignLeft="@id/toolbar"
             android:layout_alignTop="@id/toolbar"
-            android:paddingBottom="20dp"
+            android:paddingBottom="12dp"
             android:paddingLeft="16dp"
-            android:paddingTop="20dp">
+            android:paddingTop="12dp">
 
             <ImageView
                 android:id="@+id/logo"
@@ -47,8 +47,7 @@
             android:id="@+id/empty_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/toolbar"
-            android:visibility="gone">
+            android:layout_below="@+id/toolbar">
 
             <ImageView
                 android:id="@+id/empty_image"
@@ -56,7 +55,8 @@
                 android:layout_height="120dp"
                 android:layout_alignParentTop="true"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="175dp"
+                android:layout_marginTop="80dp"
+                android:visibility="visible"
                 app:srcCompat="@drawable/ic_empty_grass"/>
 
             <TextView

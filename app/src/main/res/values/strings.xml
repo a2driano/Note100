@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NOTE100</string>
+    <string name="app_name" translatable="false">NOTE100</string>
 
     <string name="context_menu_change_color">Change color</string>
 
@@ -28,8 +28,9 @@
     <string name="sort_by_color">Sort by color</string>
 
     <!-- transition name -->
-    <string name="transition_view">transition_view</string>
-    <string name="transition_view_2">transition_view_2</string>
-    <string name="transition_view_3">transition_view_3</string>
-    <string name="transition_view_fab">transition_view_fab</string>
+    <string name="transition_view" translatable="false">transition_view</string>
+    <string name="transition_view_2" translatable="false">transition_view_2</string>
+    <string name="transition_view_3" translatable="false">transition_view_3</string>
+    <string name="transition_view_fab" translatable="false">transition_view_fab</string>
+    <string name="empty_text">No notes!</string>
 </resources>

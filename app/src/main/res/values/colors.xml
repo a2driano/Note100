@@ -29,6 +29,9 @@
     <color name="WHITE">#fff</color>
     <color name="TRANSPARENT">#00ffffff</color>
 
+    <!-- Animation-->
+    <color name="colorEmptyAnimation">#B3B3B3</color>
+
     <!--<color name="YELLOW">#ffeea8</color>-->
     <!--<color name="RED">#ffb1b1</color>-->
     <!--<color name="GREEN">#bbffa9</color>-->

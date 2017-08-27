@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="context_menu_change_color">Farbe ändern</string>
+    <string name="context_menu_color_blue">BLAU</string>
+    <string name="context_menu_color_green">GRÜN</string>
+    <string name="context_menu_color_grey">GRAU</string>
+    <string name="context_menu_color_red">ROT</string>
+    <string name="context_menu_color_yellow">GELB</string>
+    <string name="create_note">Notiz erstellen</string>
+    <string name="dialog_context_cancel_button_text">Stornieren</string>
+    <string name="dialog_context_delete_button_text">Löschen</string>
+    <string name="dialog_context_delete_note">Notiz löschen</string>
+    <string name="dialog_context_delete_notes">Notizen löschen</string>
+    <string name="empty_text">Keine Notizen!</string>
+    <string name="menu_alphabetically">Alphabetisch sortieren</string>
+    <string name="menu_by_color">Sortieren nach Farbe</string>
+    <string name="menu_by_date">Nach Datum sortieren</string>
+    <string name="menu_delete">Löschen</string>
+    <string name="menu_search">Suche</string>
+    <string name="menu_setting">Einstellungen</string>
+    <string name="menu_sorting">Sortierung</string>
+    <string name="sort_by_color">Sortieren nach Farbe</string>
+    <string name="sort_by_newest">Nach neuesten sortieren</string>
+    <string name="sort_by_oldest">Nach ältesten sortieren</string>
+    <string name="sort_from_a_to_z">Sortierung von A bis Z</string>
+    <string name="sort_from_z_to_a">Sortierung von Z bis A</string>
+</resources>

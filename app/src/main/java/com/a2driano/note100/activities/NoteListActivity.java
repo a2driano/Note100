@@ -60,6 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import static com.a2driano.note100.util.AnimationUtil.emptyViewAnimation;
 import static com.a2driano.note100.util.AnimationUtil.hideElements;
 import static com.a2driano.note100.util.AnimationUtil.hideFab;
 import static com.a2driano.note100.util.AnimationUtil.visibleAnimationCheckBox;
@@ -100,6 +101,8 @@ public class NoteListActivity extends AppCompatActivity {
     private RelativeLayout mLogoToolbarLayout;
     private Menu mActionBarMenu;
     private ImageView mEmptyImage;
+    private RelativeLayout mEmptyLayout;
+
     private int mAdapterPositionSelectedItemView;
     static final int NOTE_START_ACTIVITY = 1;
 
@@ -135,6 +138,8 @@ public class NoteListActivity extends AppCompatActivity {
 
 
         mEmptyImage = (ImageView) findViewById(R.id.empty_image);
+        mEmptyLayout = (RelativeLayout) findViewById(R.id.empty_layout);
+
 
         mIsSearshActive = false;
         mSearchText = "";
@@ -218,7 +223,9 @@ public class NoteListActivity extends AppCompatActivity {
     public void onActivityReenter(int resultCode, Intent data) {
         super.onActivityReenter(resultCode, data);
         sRefreshData = true;
+        //hide empty layout
 //        updateUI();
+//        mNoteAdapter.notifyItemChanged(mAdapterPositionSelectedItemView);
 //        mNoteAdapter.notifyDataSetChanged();
 //        System.out.println("****************************onActivityReenter");
     }
@@ -226,23 +233,26 @@ public class NoteListActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
+        //change color after back transition
+//        if (mAdapterPositionSelectedItemView != -1) {
+//            updateUI();
+//            NoteHolder holder = (NoteHolder) mNoteRecyclerView.findViewHolderForLayoutPosition(mAdapterPositionSelectedItemView);
+////            NoteHolder holder = (NoteHolder) mNoteRecyclerView.findViewHolderForAdapterPosition(mAdapterPositionSelectedItemView);
+//
+////            mNoteStore = NoteStore.get(NoteListActivity.this);
+////            mNotes = mNoteStore.getNotes();
+//            String color = mNotes.get(mAdapterPositionSelectedItemView).getColor();
+////            mNoteAdapter.notifyItemChanged(mAdapterPositionSelectedItemView);
+//            changeColor(holder, color);
+//
+////            mNoteAdapter.notifyDataSetChanged();
+//        }
 //        System.out.println("**************************** sRefreshData: " + sRefreshData);
         if (sRefreshData) {
             updateUI();
             sRefreshData = false;
         }
-        //change color after back transition
-        if (mAdapterPositionSelectedItemView != -1) {
-            updateUI();
-            NoteHolder holder = (NoteHolder) mNoteRecyclerView.findViewHolderForLayoutPosition(mAdapterPositionSelectedItemView);
-//            NoteHolder holder = (NoteHolder) mNoteRecyclerView.findViewHolderForAdapterPosition(mAdapterPositionSelectedItemView);
 
-            String color = mNotes.get(mAdapterPositionSelectedItemView).getColor();
-            changeColor(holder, color);
-
-            mNoteAdapter.notifyItemChanged(mAdapterPositionSelectedItemView);
-//            mNoteAdapter.notifyDataSetChanged();
-        }
         if (!mDeleteAllCheckBoxVisible & !mIsSearshActive) {
             visibleFabOffset(fab, this);
             fab.setVisibility(View.VISIBLE);
@@ -254,18 +264,32 @@ public class NoteListActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        super.onPause();
+    }
+
+
+    @Override
     protected void onStop() {
         fab.setVisibility(View.GONE);
+        //hide empty layout
+        if (mEmptyLayout.getVisibility() == View.VISIBLE) {
+            hideElements(mEmptyLayout, this);
+            mEmptyLayout.setVisibility(View.GONE);
+        }
         super.onStop();
     }
 
     private void checkListEmpty() {
         if (mNotes != null && !mNotes.isEmpty()) {
-//            hideElements(mEmptyImage, this);
-            mEmptyImage.setVisibility(View.GONE);
+            mEmptyLayout.setVisibility(View.GONE);
+
         } else {
-            visibleElements(mEmptyImage, this);
-            mEmptyImage.setVisibility(View.VISIBLE);
+            visibleElements(mEmptyLayout, this);
+            emptyViewAnimation(mEmptyImage, this);
+//            visibleElements(mEmptyImage, this);
+//            mEmptyImage.setVisibility(View.VISIBLE);
+            mEmptyLayout.setVisibility(View.VISIBLE);
         }
     }
 

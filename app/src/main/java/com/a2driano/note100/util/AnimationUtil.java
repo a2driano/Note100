@@ -79,5 +79,12 @@ public class AnimationUtil {
         view.startAnimation(animation);
     }
 
+    public static void emptyViewAnimation(View view, Context context) {
+        Animation animation = AnimationUtils.loadAnimation(context, R.anim.rotate_and_transition_animation);
+//        animation.setRepeatCount(Animation.INFINITE);
+//        animation.setRepeatCount(Animation.RESTART);
+        view.startAnimation(animation);
+    }
+
 
 }

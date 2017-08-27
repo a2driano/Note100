@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">NOTE100</string>
     <string name="context_menu_change_color">Выбрать цвет</string>
     <string name="context_menu_color_blue">СИНИЙ</string>
     <string name="context_menu_color_green">ЗЕЛЕНЫЙ</string>
@@ -24,4 +23,5 @@
     <string name="sort_by_oldest">Сначала старые</string>
     <string name="sort_from_a_to_z">От А до Я</string>
     <string name="sort_from_z_to_a">От Я до А</string>
+    <string name="empty_text">Нет записей!</string>
 </resources>
