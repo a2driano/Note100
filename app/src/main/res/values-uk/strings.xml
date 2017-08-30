@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="context_menu_change_color">Вибрати колір</string>
+    <string name="context_menu_color_blue">СИНІЙ</string>
+    <string name="context_menu_color_green">ЗЕЛЕНИЙ</string>
+    <string name="context_menu_color_grey">СІРИЙ</string>
+    <string name="context_menu_color_red">ЧЕРВОНИЙ</string>
+    <string name="context_menu_color_yellow">ЖОВТИЙ</string>
+    <string name="create_note">Створити запис</string>
+    <string name="dialog_context_cancel_button_text">Відміна</string>
+    <string name="dialog_context_delete_button_text">Видалити</string>
+    <string name="dialog_context_delete_note">Видалити запис?</string>
+    <string name="dialog_context_delete_notes">Видалити записи?</string>
+    <string name="empty_text">Нема записів!</string>
+    <string name="menu_alphabetically">Сортувати за алфавітом</string>
+    <string name="menu_by_color">Сортувати за кольором</string>
+    <string name="menu_by_date">Сортувати за датою</string>
+    <string name="menu_delete">Видалити</string>
+    <string name="menu_search">Пошук</string>
+    <string name="menu_setting">Налаштування</string>
+    <string name="menu_sorting">Сортування</string>
+    <string name="sort_by_color">Сортування за кольором</string>
+    <string name="sort_by_newest">Спочатку нові</string>
+    <string name="sort_by_oldest">Спочатку старі</string>
+    <string name="sort_from_a_to_z">Від А до Я</string>
+    <string name="sort_from_z_to_a">Від Я до А</string>
+</resources>

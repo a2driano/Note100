@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="context_menu_change_color">Cambiar color</string>
+    <string name="context_menu_color_blue">AZUL</string>
+    <string name="context_menu_color_green">VERDE</string>
+    <string name="context_menu_color_grey">GRIS</string>
+    <string name="context_menu_color_red">ROJO</string>
+    <string name="context_menu_color_yellow">AMARILLO</string>
+    <string name="create_note">Crear nota</string>
+    <string name="dialog_context_cancel_button_text">Cancelar</string>
+    <string name="dialog_context_delete_button_text">Borrar</string>
+    <string name="dialog_context_delete_note">Eliminar nota?</string>
+    <string name="dialog_context_delete_notes">¿Eliminar notas?</string>
+    <string name="empty_text">No hay notas!</string>
+    <string name="menu_alphabetically">Ordenar alfabéticamente</string>
+    <string name="menu_by_color">Ordenar por Color</string>
+    <string name="menu_by_date">Ordenar por fecha</string>
+    <string name="menu_delete">Borrar</string>
+    <string name="menu_search">Buscar</string>
+    <string name="menu_setting">Ajustes</string>
+    <string name="menu_sorting">Clasificación</string>
+    <string name="sort_by_color">Ordenar por Color</string>
+    <string name="sort_by_newest">Ordenar por más reciente</string>
+    <string name="sort_by_oldest">Ordenar por más antiguo</string>
+    <string name="sort_from_a_to_z">Ordenar nota de A a Z</string>
+    <string name="sort_from_z_to_a">Nota corta de Z a A</string>
+</resources>
