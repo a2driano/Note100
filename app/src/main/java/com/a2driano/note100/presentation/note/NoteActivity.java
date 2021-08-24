@@ -1,4 +1,4 @@
-package com.a2driano.note100.activities;
+package com.a2driano.note100.presentation.note;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
@@ -27,16 +27,16 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.a2driano.note100.R;
-import com.a2driano.note100.data.NoteStore;
-import com.a2driano.note100.model.NoteColor;
-import com.a2driano.note100.model.NoteModel;
+import com.a2driano.note100.data.db.NoteStore;
+import com.a2driano.note100.data.model.NoteColor;
+import com.a2driano.note100.data.model.NoteModel;
 import com.a2driano.note100.util.CreateDialogNoteActivityDeleteUtil;
 
 import java.util.Date;
 import java.util.UUID;
 
-import static com.a2driano.note100.activities.NoteListActivity.EXTRA_MESSAGE_UUID;
-import static com.a2driano.note100.activities.NoteListActivity.sRefreshData;
+import static com.a2driano.note100.presentation.list.NoteListActivity.EXTRA_MESSAGE_UUID;
+import static com.a2driano.note100.presentation.list.NoteListActivity.sRefreshData;
 import static com.a2driano.note100.util.AnimationUtil.visibleElementAfterTransition;
 import static com.a2driano.note100.util.UtilNote.getReadableModifiedDateForNoteActivity;
 

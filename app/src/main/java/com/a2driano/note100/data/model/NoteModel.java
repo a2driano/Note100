@@ -1,4 +1,4 @@
-package com.a2driano.note100.model;
+package com.a2driano.note100.data.model;
 
 import java.util.Date;
 import java.util.UUID;

@@ -1,11 +1,11 @@
-package com.a2driano.note100.data;
+package com.a2driano.note100.data.db;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.a2driano.note100.model.NoteModel;
+import com.a2driano.note100.data.model.NoteModel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.a2driano.note100.data.NoteDbSchema.NoteTable;
+import static com.a2driano.note100.data.db.NoteDbSchema.NoteTable;
 
 /**
  * Created by Andrii Papai on 20.12.2016.

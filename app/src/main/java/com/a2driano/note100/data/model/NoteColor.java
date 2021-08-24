@@ -1,4 +1,4 @@
-package com.a2driano.note100.model;
+package com.a2driano.note100.data.model;
 
 /**
  * Created by Andrii Papai on 21.12.2016.

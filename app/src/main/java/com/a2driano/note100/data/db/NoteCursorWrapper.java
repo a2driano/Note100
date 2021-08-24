@@ -1,9 +1,9 @@
-package com.a2driano.note100.data;
+package com.a2driano.note100.data.db;
 
 import android.database.Cursor;
 import android.database.CursorWrapper;
 
-import com.a2driano.note100.model.NoteModel;
+import com.a2driano.note100.data.model.NoteModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -11,7 +11,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.UUID;
 
-import static com.a2driano.note100.data.NoteDbSchema.*;
+import static com.a2driano.note100.data.db.NoteDbSchema.*;
 
 /**
  * Created by Andrii Papai on 21.12.2016.

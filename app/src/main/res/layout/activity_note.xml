@@ -5,7 +5,7 @@
                 android:id="@+id/activity_second"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                tools:context="com.a2driano.note100.activities.NoteActivity">
+                tools:context="com.a2driano.note100.presentation.note.NoteActivity">
 
     <!--<FrameLayout-->
         <!--android:id="@+id/transition_view"-->
@@ -41,7 +41,7 @@
     <view
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/noteText"
-        class="com.a2driano.note100.activities.NoteActivity$LineEditText"
+        class="com.a2driano.note100.presentation.note.NoteActivity$LineEditText"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/toolbar"

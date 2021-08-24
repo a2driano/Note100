@@ -7,7 +7,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.appcompat.app.AlertDialog;
 
 import com.a2driano.note100.R;
-import com.a2driano.note100.activities.NoteActivity;
+import com.a2driano.note100.presentation.note.NoteActivity;
 
 /**
  * Created by Andrii Papai on 08.07.2017.

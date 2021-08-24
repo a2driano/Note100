@@ -1,4 +1,4 @@
-package com.a2driano.note100.data;
+package com.a2driano.note100.data.db;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

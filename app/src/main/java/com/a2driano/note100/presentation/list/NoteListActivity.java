@@ -1,4 +1,4 @@
-package com.a2driano.note100.activities;
+package com.a2driano.note100.presentation.list;
 
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
@@ -43,9 +43,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.a2driano.note100.R;
-import com.a2driano.note100.data.NoteDbSchema;
-import com.a2driano.note100.data.NoteStore;
-import com.a2driano.note100.model.NoteModel;
+import com.a2driano.note100.presentation.note.NoteActivity;
+import com.a2driano.note100.data.db.NoteDbSchema;
+import com.a2driano.note100.data.db.NoteStore;
+import com.a2driano.note100.data.model.NoteModel;
 import com.a2driano.note100.util.CommonToast;
 import com.a2driano.note100.util.CreateDialogNotesDeleteUtil;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;

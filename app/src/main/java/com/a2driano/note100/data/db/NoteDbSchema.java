@@ -1,4 +1,4 @@
-package com.a2driano.note100.data;
+package com.a2driano.note100.data.db;
 
 /**
  * Created by Andrii Papai on 21.12.2016.

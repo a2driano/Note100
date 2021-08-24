@@ -7,8 +7,8 @@ import androidx.fragment.app.DialogFragment;
 import androidx.appcompat.app.AlertDialog;
 
 import com.a2driano.note100.R;
-import com.a2driano.note100.activities.NoteListActivity;
-import com.a2driano.note100.model.NoteModel;
+import com.a2driano.note100.presentation.list.NoteListActivity;
+import com.a2driano.note100.data.model.NoteModel;
 
 import java.util.HashMap;
 import java.util.UUID;
