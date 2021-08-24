@@ -1,11 +1,10 @@
 package com.a2driano.note100.util;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.app.AlertDialog;
 
 import com.a2driano.note100.R;
 import com.a2driano.note100.activities.NoteListActivity;

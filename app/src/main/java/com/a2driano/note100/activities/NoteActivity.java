@@ -10,23 +10,21 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 
 import com.a2driano.note100.R;
 import com.a2driano.note100.data.NoteStore;
@@ -39,9 +37,7 @@ import java.util.UUID;
 
 import static com.a2driano.note100.activities.NoteListActivity.EXTRA_MESSAGE_UUID;
 import static com.a2driano.note100.activities.NoteListActivity.sRefreshData;
-import static com.a2driano.note100.util.AnimationUtil.hideElements;
 import static com.a2driano.note100.util.AnimationUtil.visibleElementAfterTransition;
-import static com.a2driano.note100.util.AnimationUtil.visibleElements;
 import static com.a2driano.note100.util.UtilNote.getReadableModifiedDateForNoteActivity;
 
 public class NoteActivity extends AppCompatActivity {
@@ -292,7 +288,7 @@ public class NoteActivity extends AppCompatActivity {
     /**
      * Class for draw line in text field
      */
-    public static class LineEditText extends android.support.v7.widget.AppCompatEditText {
+    public static class LineEditText extends androidx.appcompat.widget.AppCompatEditText {
         private Rect mRect;
         private Paint mPaint;
 

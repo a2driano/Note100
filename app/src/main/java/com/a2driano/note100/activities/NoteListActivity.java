@@ -7,25 +7,11 @@ import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Parcelable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.res.ResourcesCompat;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.view.menu.MenuView;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.transition.Explode;
+import android.os.Parcelable;
 import android.util.Pair;
 import android.view.ContextMenu;
 import android.view.KeyEvent;
@@ -47,12 +33,22 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.MenuItemCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.a2driano.note100.R;
 import com.a2driano.note100.data.NoteDbSchema;
 import com.a2driano.note100.data.NoteStore;
 import com.a2driano.note100.model.NoteModel;
 import com.a2driano.note100.util.CommonToast;
 import com.a2driano.note100.util.CreateDialogNotesDeleteUtil;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -73,14 +69,10 @@ import static com.a2driano.note100.util.UtilNote.getReadableModifiedDate;
 
 public class NoteListActivity extends AppCompatActivity {
     public final static String EXTRA_MESSAGE_UUID = "com.a2driano.note100.activities.UUID";
-//    public static boolean mDialogPositive = false;
-    //    public static final String EXTRA_MESSAGE_SEARCH_IS_ACTIVE = "com.a2driano.note100.activities.Search";
-    //    public final static String EXTRA_MESSAGE_COLOR = "com.a2driano.note100.activities.COLOR";
 
-    public static NoteListActivity mNoteListActivity;
     private RecyclerView mNoteRecyclerView;
     private NoteAdapter mNoteAdapter;
-    public static FloatingActionButton fab;
+    private FloatingActionButton fab;
     private Toolbar mToolbar;
     private List<NoteModel> mNotes;
     private HashMap<Integer, UUID> mHashDeleteNotes = null;
@@ -122,20 +114,18 @@ public class NoteListActivity extends AppCompatActivity {
 
         mAdapterPositionSelectedItemView = -1;
 
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("");
         mLogoToolbarLayout = (RelativeLayout) findViewById(R.id.logo_layout);
 
-        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                createIntentForNoteActivity(null);
                 createIntentForNoteActivity(null, fab);
             }
         });
-
 
         mEmptyImage = (ImageView) findViewById(R.id.empty_image);
         mEmptyLayout = (RelativeLayout) findViewById(R.id.empty_layout);
@@ -146,7 +136,7 @@ public class NoteListActivity extends AppCompatActivity {
 
         loadSharedPreferences();
 
-        mNoteRecyclerView = (RecyclerView) findViewById(R.id.recycle_view);
+        mNoteRecyclerView = findViewById(R.id.recycle_view);
         mNoteRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mNoteRecyclerView.setHasFixedSize(true);
         mNoteRecyclerView.setItemViewCacheSize(30);
@@ -156,11 +146,11 @@ public class NoteListActivity extends AppCompatActivity {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 if (fab.getVisibility() == View.VISIBLE && dy > 0) {
                     hideFab(fab, getBaseContext());
-                    fab.setVisibility(View.GONE);
+                    fab.hide();
 //                    fab.hide();
                 } else if (fab.getVisibility() == View.GONE && dy < 0 & !mMenuDeleteAllVisible & !mIsSearshActive) {
                     visibleFab(fab, getBaseContext());
-                    fab.setVisibility(View.VISIBLE);
+                    fab.show();
                 }
                 super.onScrolled(recyclerView, dx, dy);
             }
@@ -255,9 +245,9 @@ public class NoteListActivity extends AppCompatActivity {
 
         if (!mDeleteAllCheckBoxVisible & !mIsSearshActive) {
             visibleFabOffset(fab, this);
-            fab.setVisibility(View.VISIBLE);
+            fab.show();
         } else if (mIsSearshActive) {
-            fab.setVisibility(View.GONE);
+            fab.hide();
         }
         checkListEmpty(); //if List notes is empty draw empty image
         super.onResume();
@@ -271,7 +261,7 @@ public class NoteListActivity extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        fab.setVisibility(View.GONE);
+        fab.hide();
         //hide empty layout
         if (mEmptyLayout.getVisibility() == View.VISIBLE) {
             hideElements(mEmptyLayout, this);
@@ -452,7 +442,7 @@ public class NoteListActivity extends AppCompatActivity {
         if (mDeleteAllCheckBoxVisible) {
             /** Show the delete menu option */
             menuAnimationDeleteItemVisible();
-            fab.setVisibility(View.GONE);
+            fab.hide();
         } else {
 //            menu.setGroupVisible(R.id.menu_delete_actionbar, mMenuDeleteAllVisible);
 //            menuAnimationDeleteItemHide();
@@ -460,7 +450,7 @@ public class NoteListActivity extends AppCompatActivity {
 
         mSearchView = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.search_view));
         mSearchView.setMaxWidth(Integer.MAX_VALUE);
-        mSearchViewEditText = ((EditText) mSearchView.findViewById(android.support.v7.appcompat.R.id.search_src_text));
+        mSearchViewEditText = ((EditText) mSearchView.findViewById(R.id.search_src_text));
 
         View search = mToolbar.getMenu().findItem(R.id.search_note).getActionView();
         setOnclickListenerForMenuItemAfterAnimation(search, R.id.search_note);
@@ -607,7 +597,7 @@ public class NoteListActivity extends AppCompatActivity {
                 //if fab is not visible disable this code
                 if (fab.getVisibility() == View.VISIBLE) {
                     hideFab(fab, this);
-                    fab.setVisibility(View.GONE);
+                    fab.hide();
                 }
                 break;
             /** Delete all option click*/
@@ -668,7 +658,7 @@ public class NoteListActivity extends AppCompatActivity {
     }
 
     private void openSearchView() {
-        fab.setVisibility(View.GONE);
+        fab.hide();
         mLogoToolbarLayout.setVisibility(View.GONE); //logo gone when search is active
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24px);
         changeColorToolbarAnimation();
@@ -760,7 +750,7 @@ public class NoteListActivity extends AppCompatActivity {
         mDeleteAllCheckBoxVisible = false;
         mMenuDeleteAllVisible = false;
         visibleFab(fab, this);
-        fab.setVisibility(View.VISIBLE);
+        fab.show();
 //        invalidateOptionsMenu();
 
         /** Remember top position on screen
